@@ -1,0 +1,25 @@
+{
+  "name": "citybin-repo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sanjuka2001/CityBin-Repo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sanjuka2001/CityBin-Repo/issues"
+  },
+  "homepage": "https://github.com/sanjuka2001/CityBin-Repo#readme",
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "vite": "^6.3.5"
+  }
+}

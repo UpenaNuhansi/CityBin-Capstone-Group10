@@ -55,7 +55,7 @@ export default function SideBar({ activePage, handleNavigation }) {
 function NavItem({ icon, text, active, onClick }) {
   return (
     <div 
-      className={`p-4 flex items-center cursor-pointer transition-colors duration-200 ${active ? 'bg-green-800' : 'hover:bg-green-600'}`}
+      className={`p-4 flex items-center cursor-pointer transition-colors duration-200 ${active ? 'bg-green-900' : 'hover:bg-green-600'}`}
       onClick={onClick}
     >
       <span className="mr-2">{icon}</span>
