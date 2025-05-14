@@ -4,10 +4,10 @@ export default function LogoutModal({ onConfirm, onCancel }) {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg px-20 py-7 shadow-lg">
-        <h2 className="text-xl font-bold mb-6">Logout Confirmation</h2>
+        <h2 className="text-xl font-bold mb-6 text-center">Logout Confirmation</h2>
         
       <div className="mb-6 text-center">  
-        <p className="text-lg font-bold">Are you sure?</p>
+        <p className="text-lg">Are you sure you want to logout?</p>
       </div>
 
          <div className="flex space-x-4">

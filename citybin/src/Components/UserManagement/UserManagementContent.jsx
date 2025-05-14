@@ -1,4 +1,4 @@
-import { User, Plus } from 'lucide-react';
+import { User, Plus, Search } from 'lucide-react';
 
 export default function UserManagementContent({ users, searchText, setSearchText, handleAddUser, handleEditUser, handleDeleteUser, handleNavigation }) {
   const filteredUsers = users.filter(user => 
@@ -18,11 +18,11 @@ export default function UserManagementContent({ users, searchText, setSearchText
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <span className="absolute left-2 top-2 text-gray-500">🔍</span>
+          <span className="absolute left-2 top-2 text-gray-500"> <Search size ={16} /> </span>
         </div>
         <div 
           className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
-          onClick={() => handleNavigation('Profile')}
+          onClick={() => handleNavigation ('Profile')}
         >
           <User size={18} />
         </div>
