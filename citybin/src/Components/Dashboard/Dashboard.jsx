@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { User } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import SensorStatus from '../SensorStatus/SensorStatus';
 
 
@@ -52,7 +52,7 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <span className="absolute left-2 top-2 text-gray-500">🔍</span>
+          <span className="absolute left-2 top-2 text-gray-500"> <Search size={16} /> </span>
         </div>
         <div 
           className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
