@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import SideBar from './Components/SideBar/SideBar';
+import SideBar from '../../../Components/SideBar/SideBar';
 import SystemSettingsContent from './SystemSettingsContent';
-import LogoutModal from './LogoutModal';
+import LogoutModal from '../../../Components/LogoutModal/LogoutModal';
 
 export default function SystemSettings() {
   const [activePage, setActivePage] = useState('System Settings');

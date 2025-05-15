@@ -41,13 +41,15 @@ export default function App() {
     activePage={activePage}
     setActivePage={setActivePage}
     handleNavigation={handleNavigation}/>
+
   ): activePage === 'User Management'? (
       <UserManagement/>
   ): activePage === 'Alerts & Notifications' ? (
         <AlertsNotifications />
-  ): activePage === 'System Settings' ? (
-      <SystemSettings/>
-  ):(    
+  ) : activePage === 'System Settings' ? (
+        <SystemSettings />
+  ) : (   
+    
     <div className="flex-1 flex flex-col ml-64 p-4 bg-gray-100">
           <h1 className="text-2xl font-bold">{activePage}</h1>
           <p>Content for {activePage} page (to be implemented).</p>
