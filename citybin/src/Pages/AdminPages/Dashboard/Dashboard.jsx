@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Search, User } from 'lucide-react';
-import SensorStatus from '../../Components/SensorStatus/SensorStatus';
+import SensorStatus from '../../../Components/SensorStatus/SensorStatus';
 
 
 const wasteData = [

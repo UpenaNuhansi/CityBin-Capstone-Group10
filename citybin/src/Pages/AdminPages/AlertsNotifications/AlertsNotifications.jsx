@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AlertsNotificationsContent from './AlertsNotificationsContent';
-import CreateAlertModal from '../../Components/AlertsNotifications/CreateAlertModal';
+import CreateAlertModal from '../../../Components/AlertsNotifications/CreateAlertModal';
 import { format, isToday } from 'date-fns';
 
 // Sample notifications data

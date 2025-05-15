@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import SideBar from './Components/SideBar/SideBar'
-import Dashboard from './Pages/Dashboard/Dashboard';
+import Dashboard from './Pages/AdminPages/Dashboard/Dashboard';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
-import UserManagement from './Pages/UserManagement/UserManagement'; 
-import AlertsNotifications from './Pages/AlertsNotifications/AlertsNotifications';
+import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
+import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
