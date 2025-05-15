@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import SideBar from './Components/SideBar/SideBar'
-import Dashboard from './Components/Dashboard/Dashboard'
+import Dashboard from './Pages/Dashboard/Dashboard';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
-import UserManagement from './Components/UserManagement/UserManagement';   
-import AlertsNotifications from './Components/AlertsNotifications/AlertsNotifications';
+import UserManagement from './Pages/UserManagement/UserManagement'; 
+import AlertsNotifications from './Pages/AlertsNotifications/AlertsNotifications';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
@@ -29,6 +29,7 @@ export default function App() {
 
 
   return (
+    //Sidebar section
     <div>
        
   <SideBar activePage={activePage} 
