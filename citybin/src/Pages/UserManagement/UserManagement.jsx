@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import UserManagementContent from './UserManagementContent';
-import AddUserModal from './AddUserModal';
-import EditUserModal from './EditUserModal';
-import DeleteUserModal from './DeleteUserModal';
-import Notification from './Notification';
+import AddUserModal from '../../Components/UserManagement/AddUserModal';
+import EditUserModal from '../../Components/UserManagement/EditUserModal';
+import DeleteUserModal from '../../Components/UserManagement/DeleteUserModal';
+import Notification from '../../Components/UserManagement/Notification';
 
 // Sample user data
 const initialUsers = [
