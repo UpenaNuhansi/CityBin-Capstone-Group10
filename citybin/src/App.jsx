@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
-import SideBar from './Components/SideBar/SideBar'
+import SideBar from './Components/SideBar/SideBar';
 import Dashboard from './Pages/AdminPages/Dashboard/Dashboard';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
 import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
-import TopBar from './Components/TopBar/TopBar';
+import SystemSettings from './Pages/AdminPages/SystemSettings/SystemSettings';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
@@ -43,9 +43,11 @@ export default function App() {
     handleNavigation={handleNavigation}/>
   ): activePage === 'User Management'? (
       <UserManagement/>
-  ):activePage === 'Alerts & Notifications' ? (
+  ): activePage === 'Alerts & Notifications' ? (
         <AlertsNotifications />
-  ): (
+  ): activePage === 'System Settings' ? (
+      <SystemSettings/>
+  ):(    
     <div className="flex-1 flex flex-col ml-64 p-4 bg-gray-100">
           <h1 className="text-2xl font-bold">{activePage}</h1>
           <p>Content for {activePage} page (to be implemented).</p>
