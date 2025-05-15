@@ -5,6 +5,7 @@ import EditUserModal from '../../../Components/UserManagement/EditUserModal';
 import DeleteUserModal from '../../../Components/UserManagement/DeleteUserModal';
 import Notification from '../../../Components/UserManagement/Notification';
 
+
 // Sample user data
 const initialUsers = [
   { id: 1, name: 'John Smith', role: 'Admin', status: 'Active', lastLogin: '2024-04-17 10:03' },

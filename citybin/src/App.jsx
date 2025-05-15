@@ -4,6 +4,7 @@ import Dashboard from './Pages/AdminPages/Dashboard/Dashboard';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
 import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
+import TopBar from './Components/TopBar/TopBar';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');

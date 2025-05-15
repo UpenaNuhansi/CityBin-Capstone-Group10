@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Search, User } from 'lucide-react';
 import SensorStatus from '../../../Components/SensorStatus/SensorStatus';
-
+import TopBar from '../../../Components/TopBar/TopBar';
 
 const wasteData = [
   { month: 'May', value: 210 },
@@ -42,25 +42,16 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
 
   return (
     <div className="flex-1 flex flex-col ml-64">
-      <div className="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-10">
-        <div></div>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="search something"
-            className="bg-gray-200 rounded-full pl-8 pr-4 py-1 w-64 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <span className="absolute left-2 top-2 text-gray-500"> <Search size={16} /> </span>
-        </div>
-        <div 
-          className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
-          onClick={() => handleNavigation('Profile')}
-        >
-          <User size={18} />
-        </div>
-      </div>
+
+      <div>
+      <TopBar
+        title="Dashboard"
+        searchText={searchText}
+        setSearchText={setSearchText}
+        onProfileClick={() => handleNavigation("Profile")}
+      />
+    </div>
+
       <div className="flex-1 p-4 bg-gray-100">
         <div className="grid grid-cols-4 gap-4 mb-4">
           <StatusBox title="Total Bins" value="128" onClick={() => handleNavigation('Bin Management')} />

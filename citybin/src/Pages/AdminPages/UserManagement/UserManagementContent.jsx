@@ -1,5 +1,5 @@
 import { User, Plus, Search } from 'lucide-react';
-
+import TopBar from '../../../Components/TopBar/TopBar';
 export default function UserManagementContent({ users, searchText, setSearchText, handleAddUser, handleEditUser, handleDeleteUser, handleNavigation }) {
   const filteredUsers = users.filter(user => 
     user.name.toLowerCase().includes(searchText.toLowerCase())
@@ -8,25 +8,15 @@ export default function UserManagementContent({ users, searchText, setSearchText
   return (
     <div className="flex-1 flex flex-col">
       {/* Top Bar */}
-      <div className="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-10">
-        <div className="text-xl font-bold">User Management</div>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search something"
-            className="bg-gray-200 rounded-full pl-8 pr-4 py-1 w-64 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
-            value={searchText}
-            onChange={(e) => setSearchText(e.target.value)}
-          />
-          <span className="absolute left-2 top-2 text-gray-500"> <Search size ={16} /> </span>
-        </div>
-        <div 
-          className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
-          onClick={() => handleNavigation ('Profile')}
-        >
-          <User size={18} />
-        </div>
-      </div>
+      <div>
+      <TopBar
+        title="User Management"
+        searchText={searchText}
+        setSearchText={setSearchText}
+        onProfileClick={() => handleNavigation("Profile")}
+      />
+    </div>
+
             {/* User Management Content */}
       <div className="flex-1 p-4 bg-white flex flex-col items-center">
         {/* Header with Add User Button */}
