@@ -1,13 +1,9 @@
 import { useState } from 'react';
-import SideBar from '../../../Components/SideBar/SideBar';
 import SystemSettingsContent from './SystemSettingsContent';
-import LogoutModal from '../../../Components/LogoutModal/LogoutModal';
 
-export default function SystemSettings() {
-  const [activePage, setActivePage] = useState('System Settings');
+export default function SystemSettings({handleNavigation}) {
   const [searchText, setSearchText] = useState('');
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-
+  
   // Threshold states
   const [wasteType, setWasteType] = useState('Organic');
   const [threshold, setThreshold] = useState(75);
@@ -28,20 +24,6 @@ export default function SystemSettings() {
     { id: 1, name: 'Device 1', status: 'Connected', lastSync: 'Today, 14:32' },
     { id: 2, name: 'Device 2', status: 'Disconnected', lastSync: 'Today, 09:17' },
   ];
-
-  const handleNavigation = (page) => {
-    setActivePage(page);
-    console.log(`Navigating to ${page}`);
-  };
-
-  const handleLogoutClick = () => {
-    setShowLogoutDialog(true);
-  };
-
-  const confirmLogout = () => {
-    console.log('User logged out');
-    setShowLogoutDialog(false);
-  };
 
   const handleThresholdChange = (e) => {
     setThreshold(e.target.value);
@@ -64,14 +46,8 @@ export default function SystemSettings() {
   };
 
   return (
-    <div className="flex h-screen bg-white">
-      <SideBar 
-        activePage={activePage} 
-        handleNavigation={handleNavigation} 
-        handleLogoutClick={handleLogoutClick} 
-      />
-      <div className="flex-1 flex flex-col ml-64">
-        <SystemSettingsContent 
+    <div className="flex-1 flex flex-col ml-64" >
+           <SystemSettingsContent 
           searchText={searchText}
           setSearchText={setSearchText}
           wasteType={wasteType}
@@ -99,12 +75,6 @@ export default function SystemSettings() {
           saveFeatures={saveFeatures}
           handleNavigation={handleNavigation}
         />
-        <LogoutModal 
-          show={showLogoutDialog} 
-          onClose={() => setShowLogoutDialog(false)} 
-          onConfirm={confirmLogout} 
-        />
-      </div>
-    </div>
+        </div>
   );
 }

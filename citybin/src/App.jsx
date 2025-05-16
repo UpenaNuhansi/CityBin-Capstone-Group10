@@ -30,24 +30,33 @@ export default function App() {
 
 
   return (
+
     //Sidebar section
-    <div>
+    <div className="flex h-screen bg-white">
        
   <SideBar activePage={activePage} 
   handleNavigation={handleNavigation} 
   handleLogoutClick={handleLogoutClick}/> 
+  <div className="flex-1 flex-col">
   {activePage==='Dashboard' ? (
     <Dashboard 
     activePage={activePage}
-    setActivePage={setActivePage}
-    handleNavigation={handleNavigation}/>
+      handleNavigation={handleNavigation}/>
 
   ): activePage === 'User Management'? (
-      <UserManagement/>
+      <UserManagement 
+        handleNavigation={handleNavigation}
+    />
+
   ): activePage === 'Alerts & Notifications' ? (
-        <AlertsNotifications />
+        <AlertsNotifications 
+         handleNavigation={handleNavigation}
+        />
+
   ) : activePage === 'System Settings' ? (
-        <SystemSettings />
+        <SystemSettings
+         handleNavigation={handleNavigation}
+        />
   ) : (   
     
     <div className="flex-1 flex flex-col ml-64 p-4 bg-gray-100">
@@ -55,14 +64,16 @@ export default function App() {
           <p>Content for {activePage} page (to be implemented).</p>
         </div>
   )}
+</div>
 
+{/*Logout modal*/}
    {isLogoutModalOpen && (                 
-        <LogoutModal 
+        <LogoutModal
+          show={isLogoutModalOpen} 
           onConfirm={handleConfirmLogout} 
           onCancel={handleCancelLogout} 
         />
       )}
-
   </div>
   );
 }

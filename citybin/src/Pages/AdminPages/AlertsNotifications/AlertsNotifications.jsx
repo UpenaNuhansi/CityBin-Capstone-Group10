@@ -63,7 +63,7 @@ function formatLastTriggered(timestamp) {
   return isToday(date) ? format(date, 'HH:mm') + ' today' : format(date, 'dd/MM/yyyy HH:mm');
 }
 
-export default function AlertsNotifications() {
+export default function AlertsNotifications({handleNavigation}) {
   const [notifications, setNotifications] = useState(initialNotifications);
   const [alertSettings, setAlertSettings] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -154,6 +154,7 @@ export default function AlertsNotifications() {
   };
 
   return (
+    <div>
     <div className="flex-1 flex flex-col">
       <AlertsNotificationsContent 
         notifications={notifications} 
@@ -171,8 +172,9 @@ export default function AlertsNotifications() {
         handleCreateAlert={handleCreateAlert}
         notificationState={notification}
         formatLastTriggered={formatLastTriggered} 
+        handleNavigation={handleNavigation}
       />
-
+    
       {showCreateAlertModal && (
         <CreateAlertModal
           show={showCreateAlertModal}
@@ -182,6 +184,7 @@ export default function AlertsNotifications() {
           onSave={handleAddAlertSave}
         />
       )}
+    </div>
     </div>
   );
 }

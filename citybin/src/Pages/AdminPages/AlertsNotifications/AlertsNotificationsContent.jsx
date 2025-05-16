@@ -22,6 +22,12 @@ export default function AlertsNotificationsContent({
     notif.type.toLowerCase().includes(searchText.toLowerCase())
   );
 
+  const filteredAlertSettings = alertSettings.filter(setting =>
+    setting.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    setting.condition.toLowerCase().includes(searchText.toLowerCase())
+  );
+
+
   return (
     <div className="flex-1 flex flex-col ml-64">
       {/* Top Bar */}
@@ -154,7 +160,8 @@ export default function AlertsNotificationsContent({
                   </tr>
                 </thead>
                 <tbody>
-                  {alertSettings.map((setting, index) => (
+                  {filteredAlertSettings.length > 0 ? (
+                    filteredAlertSettings.map((setting, index) => (
                     <tr 
                       key={setting.id} 
                       className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-green-50' : 'bg-white'}`}
@@ -181,7 +188,15 @@ export default function AlertsNotificationsContent({
                         </button>
                       </td>
                     </tr>
-                  ))}
+                   ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="py-8 text-center text-gray-500">
+                        <Bell size={36} className="mx-auto text-gray-400 mb-2" />
+                        No alerts configured yet
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
