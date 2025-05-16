@@ -5,6 +5,7 @@ import LogoutModal from './Components/LogoutModal/LogoutModal';
 import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
 import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
 import SystemSettings from './Pages/AdminPages/SystemSettings/SystemSettings';
+import DataAnalyticsReports from './Pages/AdminPages/DataAnalyticsReports/DataAnalyticsReports';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
@@ -53,11 +54,15 @@ export default function App() {
          handleNavigation={handleNavigation}
         />
 
-  ) : activePage === 'System Settings' ? (
-        <SystemSettings
+  ) : activePage === 'Data Analytics & Reports' ? (
+        <DataAnalyticsReports
          handleNavigation={handleNavigation}
         />
-  ) : (   
+  ) : activePage === 'System Settings' ? (   
+    <SystemSettings
+         handleNavigation={handleNavigation}
+        />
+  ):(
     
     <div className="flex-1 flex flex-col ml-64 p-4 bg-gray-100">
           <h1 className="text-2xl font-bold">{activePage}</h1>
