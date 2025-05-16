@@ -6,6 +6,7 @@ import UserManagement from './Pages/AdminPages/UserManagement/UserManagement';
 import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
 import SystemSettings from './Pages/AdminPages/SystemSettings/SystemSettings';
 import DataAnalyticsReports from './Pages/AdminPages/DataAnalyticsReports/DataAnalyticsReports';
+import ProfilePage from './Pages/AdminPages/ProfilePage/ProfilePage';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
@@ -60,6 +61,10 @@ export default function App() {
         />
   ) : activePage === 'System Settings' ? (   
     <SystemSettings
+         handleNavigation={handleNavigation}
+        />
+        ) : activePage === 'Profile' ? (   
+    <ProfilePage
          handleNavigation={handleNavigation}
         />
   ):(
