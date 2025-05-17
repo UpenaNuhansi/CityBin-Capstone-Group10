@@ -9,6 +9,12 @@ export default function ProfilePageContent({
   menuItems,
   handleNavigation,
   handleLogout,
+  showEditModal,
+  setShowEditModal,
+  editUserData,
+  setEditUserData,
+  handleEditUser,
+  handleCancelEdit,
 }) {
   return (
     <div className="flex h-screen bg-white">
@@ -59,7 +65,7 @@ export default function ProfilePageContent({
                     <div className="font-medium">{item.label}</div>
                     <div className="text-sm text-gray-500">{item.description}</div>
                   </div>
-                  <ChevronRight size={18} className="text-gray-400" />
+                  
                 </div>
               ))}
             </div>
@@ -68,7 +74,7 @@ export default function ProfilePageContent({
             <div className="p-4 border-t border-gray-200 flex justify-center">
               <button 
                 className="flex items-center justify-center text-green-700 hover:bg-green-50 p-2 rounded transition-colors duration-200 w-full"
-                onClick={handleLogout}
+                onClick={() => setShowEditModal(true)}
               >
                 <Edit size={20} className="mr-2" />
                 Edit Profile
@@ -76,6 +82,48 @@ export default function ProfilePageContent({
             </div>
           </div>
         </div>
+        {/* Edit Profile Modal */}
+        {showEditModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg p-6 w-96">
+              <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-gray-700 mb-1">Name</label>
+                  <input
+                    type="text"
+                    value={editUserData.name}
+                    onChange={(e) => setEditUserData({ ...editUserData, name: e.target.value })}
+                    className="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 mb-1">Email</label>
+                  <input
+                    type="email"
+                    value={editUserData.email}
+                    onChange={(e) => setEditUserData({ ...editUserData, email: e.target.value })}
+                    className="w-full bg-gray-100 rounded p-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <button
+                  className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors duration-200"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="bg-green-700 text-white px-6 py-2 rounded hover:bg-green-800 transition-colors duration-200"
+                  onClick={handleEditUser}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

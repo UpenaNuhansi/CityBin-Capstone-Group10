@@ -19,12 +19,12 @@ export default function TopBar({ title, searchText, setSearchText, onProfileClic
         </span>
       </div>
       {/*profile icon align on the top bar..... */}
-      <div className="inset-0 ">
+      <div>
              <div 
        className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
         onClick={onProfileClick}
       />
-        <User size={18} />
+        <User size={18} className="-mt-6 items-center ml-2 " color="white"/>
       </div>
       </div>
       );

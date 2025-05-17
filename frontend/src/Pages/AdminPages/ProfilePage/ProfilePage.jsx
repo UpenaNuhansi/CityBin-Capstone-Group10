@@ -3,17 +3,25 @@ import { Check, Clock, Mail, Calendar } from 'lucide-react';
 import ProfilePageContent from './ProfilePageContent';
 
 export default function ProfilePage({ handleNavigation }) {
-  console.log('ProfilePage component is rendering');
+  // console.log('ProfilePage component is rendering');
   const [activePage, setActivePage] = useState('ProfilePage');
   const [searchText, setSearchText] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false); // State for edit modal
+  const [editUserData, setEditUserData] = useState({
+    name: "John Smith",
+    email: "john.smith@example.com",
+  });
+
 
   // User data - would come from backend/authentication system
   const userData = {
-    name: "John Smith",
+    name: editUserData.name,
+    // name: "John Smith",
     role: "Admin",
     status: "Active",
     lastLogin: "2025-05-15 14:03", // Updated to a recent date
-    email: "john.smith@example.com", // Added email
+    email: editUserData.email,
+    // email: "john.smith@example.com", // Added email
     accountCreated: "2024-01-10", // Added account creation date
     profileImage: null // Placeholder for profile image
   };
@@ -28,6 +36,28 @@ export default function ProfilePage({ handleNavigation }) {
     // Implement actual logout functionality here
     // e.g. clearAuthToken(), redirect to login page, etc.
   };
+
+
+  const handleEditUser = () => {
+    //validation of basic info
+    if (!editUserData.name.trim() || !editUserData.email.trim()) {
+      console.log('Error: Name and email cannot be empty');
+      return;
+    }
+    console.log('User data updated:', editUserData);
+    setShowEditModal(false);
+  };
+
+  const handleCancelEdit = () => {
+    console.log('Edit cancelled, reverting changes');
+    // Reset form data to original values
+    setEditUserData({
+      name: userData.name,
+      email: userData.email,
+    });
+    setShowEditModal(false);
+  };
+
 
   // Menu items for profile actions
   const menuItems = [
@@ -66,6 +96,12 @@ export default function ProfilePage({ handleNavigation }) {
       menuItems={menuItems}
       handleNavigation={handlePageNavigation}
       handleLogout={handleLogout}
+      showEditModal={showEditModal}
+      setShowEditModal={setShowEditModal}
+      editUserData={editUserData}
+      setEditUserData={setEditUserData}
+      handleEditUser={handleEditUser}
+      handleCancelEdit={handleCancelEdit}
     />
   );
 }
