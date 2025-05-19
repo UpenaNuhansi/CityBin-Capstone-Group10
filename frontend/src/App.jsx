@@ -74,6 +74,11 @@ export default function App() {
 
         {/* Future User Route Placeholder */}
         <Route path="/user/*" element={<div>User Dashboard (Coming Soon)</div>} />
+
+
+
+
+        
       </Routes>
     </Router>
   );
