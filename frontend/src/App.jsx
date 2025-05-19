@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import SideBar from './Components/SideBar/SideBar';
-import Dashboard from './Pages/AdminPages/Dashboard/Dashboard';
+import Dashboard from './Pages/Admin/Dashboard/Dashboard';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
-import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
-import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
-import SystemSettings from './Pages/AdminPages/SystemSettings/SystemSettings';
-import DataAnalyticsReports from './Pages/AdminPages/DataAnalyticsReports/DataAnalyticsReports';
-import ProfilePage from './Pages/AdminPages/ProfilePage/ProfilePage';
+import UserManagement from './Pages/Admin/UserManagement/UserManagement'; 
+import AlertsNotifications from './Pages/Admin/AlertsNotifications/AlertsNotifications';
+import SystemSettings from './Pages/Admin/SystemSettings/SystemSettings';
+import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyticsReports';
+import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');

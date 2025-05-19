@@ -1,46 +1,101 @@
-import { BarChart2, Bell, Settings, Users, Trash2, LogOut, User, ChevronRight, Edit } from 'lucide-react';
+import { useState } from 'react';
+import { Check, Clock, Mail, Calendar, BarChart2, Bell, Settings, Users, Trash2, LogOut, User, Edit } from 'lucide-react';
 import TopBar from '../../../Components/TopBar/TopBar';
 
-export default function ProfilePageContent({
-  activePage,
-  searchText,
-  setSearchText,
-  userData,
-  menuItems,
-  handleNavigation,
-  handleLogout,
-  showEditModal,
-  setShowEditModal,
-  editUserData,
-  setEditUserData,
-  handleEditUser,
-  handleCancelEdit,
-}) {
+export default function ProfilePage({ handleNavigation }) {
+  const [activePage, setActivePage] = useState('ProfilePage');
+  const [searchText, setSearchText] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editUserData, setEditUserData] = useState({
+    name: "John Smith",
+    email: "john.smith@example.com",
+  });
+
+  const userData = {
+    name: editUserData.name,
+    role: "Admin",
+    status: "Active",
+    lastLogin: "2025-05-15 14:03",
+    email: editUserData.email,
+    accountCreated: "2024-01-10",
+    profileImage: null
+  };
+
+  const handlePageNavigation = (page) => {
+    setActivePage(page);
+    handleNavigation(page);
+  };
+
+  const handleLogout = () => {
+    console.log('User logged out');
+  };
+
+  const handleEditUser = () => {
+    if (!editUserData.name.trim() || !editUserData.email.trim()) {
+      console.log('Error: Name and email cannot be empty');
+      return;
+    }
+    console.log('User data updated:', editUserData);
+    setShowEditModal(false);
+  };
+
+  const handleCancelEdit = () => {
+    console.log('Edit cancelled, reverting changes');
+    setEditUserData({
+      name: userData.name,
+      email: userData.email,
+    });
+    setShowEditModal(false);
+  };
+
+  const menuItems = [
+    {
+      icon: <Check size={18} />,
+      label: "Status",
+      description: userData.status,
+      action: () => console.log("Status clicked")
+    },
+    {
+      icon: <Clock size={18} />,
+      label: "Last Login",
+      description: userData.lastLogin,
+      action: () => console.log("Login info clicked")
+    },
+    {
+      icon: <Mail size={18} />,
+      label: "Email Address",
+      description: userData.email,
+      action: () => console.log("Email clicked")
+    },
+    {
+      icon: <Calendar size={18} />,
+      label: "Account Created",
+      description: userData.accountCreated,
+      action: () => console.log("Account created clicked")
+    }
+  ];
+
   return (
     <div className="flex h-screen bg-white">
-      {/* Main Content */}
       <div className="flex-1 flex flex-col ml-64">
-        {/* Top Bar */}
         <div>
           <TopBar
             title="Profile"
             searchText={searchText}
             setSearchText={setSearchText}
-            onProfileClick={() => handleNavigation('ProfilePage')}
+            onProfileClick={() => handlePageNavigation('ProfilePage')}
           />
         </div>
 
-        {/* Profile Content */}
         <div className="flex-1 p-6 bg-gray-100 flex justify-center items-start pt-12">
           <div className="w-96 bg-white rounded-lg shadow overflow-hidden">
-            {/* Profile Header */}
             <div className="flex flex-col items-center p-6 border-b border-gray-200">
               <div className="w-20 h-20 bg-green-700 rounded-full flex items-center justify-center text-white mb-4">
                 {userData.profileImage ? (
-                  <img 
-                    src={userData.profileImage} 
-                    alt="Profile" 
-                    className="w-full h-full rounded-full object-cover" 
+                  <img
+                    src={userData.profileImage}
+                    alt="Profile"
+                    className="w-full h-full rounded-full object-cover"
                   />
                 ) : (
                   <User size={40} />
@@ -50,10 +105,9 @@ export default function ProfilePageContent({
               <p className="text-gray-600">{userData.role}</p>
             </div>
 
-            {/* Profile Menu Items */}
             <div className="divide-y divide-gray-200">
               {menuItems.map((item, index) => (
-                <div 
+                <div
                   key={index}
                   className="p-4 hover:bg-gray-50 cursor-pointer flex items-center"
                   onClick={item.action}
@@ -65,14 +119,12 @@ export default function ProfilePageContent({
                     <div className="font-medium">{item.label}</div>
                     <div className="text-sm text-gray-500">{item.description}</div>
                   </div>
-                  
                 </div>
               ))}
             </div>
 
-            {/* Edit profile Button */}
             <div className="p-4 border-t border-gray-200 flex justify-center">
-              <button 
+              <button
                 className="flex items-center justify-center text-green-700 hover:bg-green-50 p-2 rounded transition-colors duration-200 w-full"
                 onClick={() => setShowEditModal(true)}
               >
@@ -82,7 +134,7 @@ export default function ProfilePageContent({
             </div>
           </div>
         </div>
-        {/* Edit Profile Modal */}
+
         {showEditModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg shadow-lg p-6 w-96">
@@ -110,7 +162,7 @@ export default function ProfilePageContent({
               <div className="flex justify-end space-x-2 mt-6">
                 <button
                   className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-500 transition-colors duration-200"
-                  onClick={() => setShowEditModal(false)}
+                  onClick={handleCancelEdit}
                 >
                   Cancel
                 </button>
