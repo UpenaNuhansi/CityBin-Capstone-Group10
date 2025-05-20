@@ -15,6 +15,9 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
+// User Pages
+
+
 // Layout for Admin Section
 const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
   <div className="flex h-screen bg-white">
@@ -29,6 +32,11 @@ const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
     </div>
   </div>
 );
+
+
+// Layout for User Section
+
+
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
