@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import BinImage from './../assets/BIN.jpg'
+import BinImage from "../../../assets/BIN.jpg";
 
 function SettingsPage() {
   const [notifications, setNotifications] = useState({

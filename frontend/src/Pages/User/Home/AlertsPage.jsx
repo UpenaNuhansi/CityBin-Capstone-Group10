@@ -1,4 +1,4 @@
-import BinImage from './../assets/BIN.jpg'
+import BinImage from "../../../assets/BIN.jpg";
 
 function AlertsPage() {
   const notifications = [
