@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 
 
 // Common Pages
-import SignUp from './Pages/Auth/SignUp';
-import SignIn from './Pages/Auth/SignIn';
+import LandingPage from './pages/LandingPage'
+import LoginForm from './pages/LoginForm'
+import RegisterForm from './pages/RegisterForm'
 
 // Admin Pages
 import SideBar from './Components/SideBar/SideBar';
@@ -70,9 +71,10 @@ export default function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Navigate to="/signin" />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+         <Route path="/login" element={<LoginForm />} />
+        
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/" element={<LandingPage />} />
 
         {/* Admin Route */}
         <Route
