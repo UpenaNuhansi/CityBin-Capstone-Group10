@@ -2,6 +2,7 @@ import { Search, User } from "lucide-react";
 
 export default function TopBar({ title, searchText, setSearchText, onProfileClick }) {
   return (
+    
     <div className="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-10">
       <div className="text-xl font-bold">{title}</div>
       
@@ -17,13 +18,14 @@ export default function TopBar({ title, searchText, setSearchText, onProfileClic
           <Search size={16} />
         </span>
       </div>
-      
-      <div 
-        className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
+      {/*profile icon align on the top bar..... */}
+      <div>
+             <div 
+       className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
         onClick={onProfileClick}
-      >
-        <User size={18} />
+      />
+        <User size={18} className="-mt-6 items-center ml-2 " color="white"/>
       </div>
-    </div>
-  );
+      </div>
+      );
 }

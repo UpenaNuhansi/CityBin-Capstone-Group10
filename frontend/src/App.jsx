@@ -1,85 +1,113 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+
+
+// Common Pages
+import LandingPage from './pages/LandingPage'
+import LoginForm from './pages/LoginForm'
+import RegisterForm from './pages/RegisterForm'
+
+// Admin Pages
 import SideBar from './Components/SideBar/SideBar';
-import Dashboard from './Pages/AdminPages/Dashboard/Dashboard';
+import Dashboard from './Pages/Admin/Dashboard/Dashboard';
+import UserManagement from './Pages/Admin/UserManagement/UserManagement';
+import AlertsNotifications from './Pages/Admin/AlertsNotifications/AlertsNotifications';
+import SystemSettings from './Pages/Admin/SystemSettings/SystemSettings';
+import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyticsReports';
+import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
-import UserManagement from './Pages/AdminPages/UserManagement/UserManagement'; 
-import AlertsNotifications from './Pages/AdminPages/AlertsNotifications/AlertsNotifications';
-import SystemSettings from './Pages/AdminPages/SystemSettings/SystemSettings';
-import DataAnalyticsReports from './Pages/AdminPages/DataAnalyticsReports/DataAnalyticsReports';
+
+
+//User Pages
+
+import HomePage from './Pages/User/Home/HomePage';
+import ReportPage from './Pages/User/Home/ReportPage';
+import SettingsPage from './Pages/User/Home/SettingsPage';
+import AlertsPage from './Pages/User/Home/AlertsPage';
+import Header from './Components/Header/Header';
+import Layout from './Components/Layout/Layout';
+import Sidebar from './Components/side_bar/Sidebar';
+
+
+// User Pages
+ 
+
+
+// Layout for Admin Section
+const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
+  <div className="flex h-screen bg-white">
+    <SideBar activePage={activePage} handleNavigation={handleNavigation} handleLogoutClick={handleLogoutClick} />
+    <div className="flex-1 flex-col">
+      {activePage === 'Dashboard' && <Dashboard handleNavigation={handleNavigation} />}
+      {activePage === 'User Management' && <UserManagement handleNavigation={handleNavigation} />}
+      {activePage === 'Alerts & Notifications' && <AlertsNotifications handleNavigation={handleNavigation} />}
+      {activePage === 'Data Analytics & Reports' && <DataAnalyticsReports handleNavigation={handleNavigation} />}
+      {activePage === 'System Settings' && <SystemSettings handleNavigation={handleNavigation} />}
+      {activePage === 'Profile' && <ProfilePage handleNavigation={handleNavigation} />}
+    </div>
+  </div>
+);
+
+
+// Layout for User Section
+
+
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
-  const [isLogoutModalOpen, setIsLogoutModalOpen]= useState(false);    
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-  const handleNavigation = (page) => {
-    setActivePage(page);
-    console.log(`Navigating to ${page}`);
-  };
-
-    const handleLogoutClick = () => {       
-    setIsLogoutModalOpen(true);
-  };
-
-  const handleConfirmLogout = () => {      
+  const handleNavigation = (page) => setActivePage(page);
+  const handleLogoutClick = () => setIsLogoutModalOpen(true);
+  const handleConfirmLogout = () => {
     setIsLogoutModalOpen(false);
-    console.log('User logged out'); // Simulate logout; in a real app, clear auth state and redirect
+    console.log('Logged out');
+    // Navigate to sign-in page (optional)
   };
-
-  const handleCancelLogout = () => {      
-    setIsLogoutModalOpen(false);
-  };
-
+  const handleCancelLogout = () => setIsLogoutModalOpen(false);
 
   return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+         <Route path="/login" element={<LoginForm />} />
+        
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/" element={<LandingPage />} />
 
-    //Sidebar section
-    <div className="flex h-screen bg-white">
-       
-  <SideBar activePage={activePage} 
-  handleNavigation={handleNavigation} 
-  handleLogoutClick={handleLogoutClick}/> 
-  <div className="flex-1 flex-col">
-  {activePage==='Dashboard' ? (
-    <Dashboard 
-    activePage={activePage}
-      handleNavigation={handleNavigation}/>
-
-  ): activePage === 'User Management'? (
-      <UserManagement 
-        handleNavigation={handleNavigation}
-    />
-
-  ): activePage === 'Alerts & Notifications' ? (
-        <AlertsNotifications 
-         handleNavigation={handleNavigation}
+        {/* Admin Route */}
+        <Route
+          path="/admin/*"
+          element={
+            <>
+              <AdminLayout
+                activePage={activePage}
+                handleNavigation={handleNavigation}
+                handleLogoutClick={handleLogoutClick}
+              />
+              {isLogoutModalOpen && (
+                <LogoutModal
+                  show={isLogoutModalOpen}
+                  onConfirm={handleConfirmLogout}
+                  onCancel={handleCancelLogout}
+                />
+              )}
+            </>
+          }
         />
 
-  ) : activePage === 'Data Analytics & Reports' ? (
-        <DataAnalyticsReports
-         handleNavigation={handleNavigation}
-        />
-  ) : activePage === 'System Settings' ? (   
-    <SystemSettings
-         handleNavigation={handleNavigation}
-        />
-  ):(
+        {/* User Route */}
+      
+      <Route path="/user/*" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="report" element={<ReportPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="alerts" element={<AlertsPage />} />
+        </Route>
     
-    <div className="flex-1 flex flex-col ml-64 p-4 bg-gray-100">
-          <h1 className="text-2xl font-bold">{activePage}</h1>
-          <p>Content for {activePage} page (to be implemented).</p>
-        </div>
-  )}
-</div>
-
-{/*Logout modal*/}
-   {isLogoutModalOpen && (                 
-        <LogoutModal
-          show={isLogoutModalOpen} 
-          onConfirm={handleConfirmLogout} 
-          onCancel={handleCancelLogout} 
-        />
-      )}
-  </div>
+   
+      </Routes>
+    </Router>
   );
 }
-
