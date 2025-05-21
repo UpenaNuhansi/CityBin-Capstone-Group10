@@ -17,7 +17,7 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
-user_pages_development
+
 //User Pages
 
 import HomePage from './Pages/User/Home/HomePage';
@@ -30,7 +30,7 @@ import Sidebar from './Components/side_bar/Sidebar';
 
 
 // User Pages
- dev
+ 
 
 
 // Layout for Admin Section
@@ -97,12 +97,12 @@ export default function App() {
 
         {/* User Route */}
       
-      <Route path="/" element={<Layout />}>
-        <Route index element={<HomePage />} />
-        <Route path="report" element={<ReportPage />} />
-        <Route path="settings" element={<SettingsPage />} />
-        <Route path="alerts" element={<AlertsPage />} />
-      </Route>
+      <Route path="/user/*" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="report" element={<ReportPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="alerts" element={<AlertsPage />} />
+        </Route>
     
    
       </Routes>
