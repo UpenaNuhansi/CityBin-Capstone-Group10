@@ -2,14 +2,16 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+
 const authRouter = require('./routers/authRouter');
+const userRouter = require('./routers/userRouter');
 
 const app = express();
 
 // Enhanced CORS configuration
 app.use(cors({
   origin: '*', // Allow all origins (for development)
-  methods: ['GET', 'POST'], // Allowed methods
+  methods: ['GET', 'POST','PUT','DELETE'], // Allowed methods
   allowedHeaders: ['Content-Type'] // Allowed headers
 }));
 
@@ -24,6 +26,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Routes
 app.use('/api/auth', authRouter);
+app.use('/api/users', userRouter);
 
 // Test route
 app.get('/', (req, res) => {
