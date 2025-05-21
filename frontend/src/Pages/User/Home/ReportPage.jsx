@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import BinImage from './../assets/BIN.jpg'
+import BinImage from "../../../assets/BIN.jpg";
+
 
 function ReportPage() {
   const [selectedProblem, setSelectedProblem] = useState('overflow');

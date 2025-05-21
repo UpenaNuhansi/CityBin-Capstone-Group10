@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
+
+
 // Common Pages
 import SignUp from './Pages/Auth/SignUp';
 import SignIn from './Pages/Auth/SignIn';
@@ -15,7 +17,20 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
+user_pages_development
+//User Pages
+
+import HomePage from './Pages/User/Home/HomePage';
+import ReportPage from './Pages/User/Home/ReportPage';
+import SettingsPage from './Pages/User/Home/SettingsPage';
+import AlertsPage from './Pages/User/Home/AlertsPage';
+import Header from './Components/Header/Header';
+import Layout from './Components/Layout/Layout';
+import Sidebar from './Components/side_bar/Sidebar';
+
+
 // User Pages
+ dev
 
 
 // Layout for Admin Section
@@ -80,21 +95,16 @@ export default function App() {
           }
         />
 
-        {/* Future User Route Placeholder */}
-        <Route path="/user/*" element={<div>User Dashboard (Coming Soon)</div>} />
-        
-        
+        {/* User Route */}
       
+      <Route path="/" element={<Layout />}>
         <Route index element={<HomePage />} />
         <Route path="report" element={<ReportPage />} />
-        <Route path="alerts" element={<AlertsPage />} />
         <Route path="settings" element={<SettingsPage />} />
-      
+        <Route path="alerts" element={<AlertsPage />} />
+      </Route>
+    
    
-
-
-
-
       </Routes>
     </Router>
   );
