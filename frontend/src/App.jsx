@@ -17,6 +17,7 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
+user_pages_development
 //User Pages
 
 import HomePage from './Pages/User/Home/HomePage';
@@ -27,6 +28,9 @@ import Header from './Components/Header/Header';
 import Layout from './Components/Layout/Layout';
 import Sidebar from './Components/side_bar/Sidebar';
 
+
+// User Pages
+ dev
 
 
 // Layout for Admin Section
@@ -43,6 +47,11 @@ const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
     </div>
   </div>
 );
+
+
+// Layout for User Section
+
+
 
 export default function App() {
   const [activePage, setActivePage] = useState('Dashboard');
