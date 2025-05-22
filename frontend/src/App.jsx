@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Common Pages
-import SignUp from './Pages/Auth/SignUp';
-import SignIn from './Pages/Auth/SignIn';
+import LandingPage from './pages/LandingPage'
+import LoginForm from './pages/LoginForm'
+import RegisterForm from './pages/RegisterForm'
 
 // Admin Pages
 import SideBar from './Components/SideBar/SideBar';
@@ -15,7 +16,7 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
-// User Pages
+
 import HomePage from './Pages/User/Home/HomePage';
 import ReportPage from './Pages/User/Home/ReportPage';
 import SettingsPage from './Pages/User/Home/SettingsPage';
@@ -23,6 +24,7 @@ import AlertsPage from './Pages/User/Home/AlertsPage';
 import Header from './Components/Header/Header';
 import Layout from './Components/Layout/Layout';
 import Sidebar from './Components/side_bar/Sidebar';
+
 
 // Layout for Admin Section
 const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
@@ -113,9 +115,10 @@ export default function App() {
     <Router>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Navigate to="/signin" />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
+         <Route path="/login" element={<LoginForm />} />
+        
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/" element={<LandingPage />} />
 
         {/* Admin Route */}
         <Route
@@ -138,8 +141,20 @@ export default function App() {
           }
         />
 
+user_pages_development
         {/* User Routes - Now properly connected */}
         <Route path="/user/*" element={<UserLayoutWrapper />} />
+
+        {/* User Route */}
+      
+      <Route path="/user/*" element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="report" element={<ReportPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="alerts" element={<AlertsPage />} />
+        </Route>
+    
+ dev
       </Routes>
     </Router>
   );
