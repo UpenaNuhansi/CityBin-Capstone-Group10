@@ -48,13 +48,13 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
         title="Dashboard"
         searchText={searchText}
         setSearchText={setSearchText}
-        onProfileClick={() => handleNavigation("Profile")}
+        onProfileClick={() => handleNavigation("/admin/profile")}
       />
     </div>
 
       <div className="flex-1 p-4 bg-gray-100">
         <div className="grid grid-cols-4 gap-4 mb-4">
-          <StatusBox title="Total Bins" value="128" onClick={() => handleNavigation('Bin Management')} />
+          <StatusBox title="Total Bins" value="128" onClick={() => handleNavigation('/admin/bin-management')} />
           <StatusBox title="Active Bins" value="103" onClick={() => handleNavigation('Bin Management')}/>
           <StatusBox title="Full Bins" value="16" onClick={() => handleNavigation('Bin Management')}/>
           <StatusBox title="Maintenance Issues" value="5" onClick={() => handleNavigation('Bin Management')}/>
@@ -62,7 +62,7 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
         <div className="grid grid-cols-3 gap-4">
           <div 
             className="col-span-2 bg-green-800 rounded-lg p-4 text-white hover:shadow-lg transition-all duration-200 cursor-pointer"
-            onClick={() => handleNavigation('Data Analytics & Reports')}
+            onClick={() => handleNavigation('/admin/data-analytics-reports')}
           >
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -86,7 +86,7 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
           </div>
           <div 
             className="bg-white rounded-lg p-4 hover:shadow-lg transition-all duration-200 cursor-pointer"
-            onClick={() => handleNavigation('Alerts & Notifications')}
+            onClick={() => handleNavigation('/admin/alerts-notifications')}
           >
             <h3 className="font-bold mb-4">Sensor & Connectivity Status</h3>
             {Object.keys(sensorStatus).map((sensor) => (
@@ -101,7 +101,7 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
         </div>
         <div 
           className="bg-white rounded-lg p-4 mt-4 hover:shadow-lg transition-all duration-200 cursor-pointer"
-          onClick={() => handleNavigation('Alerts & Notifications')}
+          onClick={() => handleNavigation('/admin/alerts-notifications')}
         >
           <h3 className="font-bold mb-4">Recent Activity</h3>
           {recentActivity.map((activity, index) => (

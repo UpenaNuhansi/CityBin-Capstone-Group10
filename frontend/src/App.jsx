@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 
 // Common Pages
-import LandingPage from './pages/LandingPage'
-import LoginForm from './pages/LoginForm'
-import RegisterForm from './pages/RegisterForm'
+import LandingPage from './pages/LandingPage';
+import LoginForm from './pages/LoginForm';
+import RegisterForm from './pages/RegisterForm';
 
 // Admin Pages
 import SideBar from './Components/SideBar/SideBar';
@@ -16,7 +16,7 @@ import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyti
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
 
-
+// User Pages
 import HomePage from './Pages/User/Home/HomePage';
 import ReportPage from './Pages/User/Home/ReportPage';
 import SettingsPage from './Pages/User/Home/SettingsPage';
@@ -26,64 +26,68 @@ import Layout from './Components/Layout/Layout';
 import Sidebar from './Components/side_bar/Sidebar';
 
 
-// Layout for Admin Section
-const AdminLayout = ({ activePage, handleNavigation, handleLogoutClick }) => (
-  <div className="flex h-screen bg-white">
-    <SideBar activePage={activePage} handleNavigation={handleNavigation} handleLogoutClick={handleLogoutClick} />
-    <div className="flex-1 flex-col">
-      {activePage === 'Dashboard' && <Dashboard handleNavigation={handleNavigation} />}
-      {activePage === 'User Management' && <UserManagement handleNavigation={handleNavigation} />}
-      {activePage === 'Alerts & Notifications' && <AlertsNotifications handleNavigation={handleNavigation} />}
-      {activePage === 'Data Analytics & Reports' && <DataAnalyticsReports handleNavigation={handleNavigation} />}
-      {activePage === 'System Settings' && <SystemSettings handleNavigation={handleNavigation} />}
-      {activePage === 'Profile' && <ProfilePage handleNavigation={handleNavigation} />}
-    </div>
-  </div>
-);
-
-// Layout for User Section with proper routing
-const UserLayoutWrapper = () => {
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+//ADMIN LAYOUT WRAPPER WITH LOGIC AND OUTLET SUPPORT
+const AdminLayoutWrapper = () => {
   const location = useLocation();
-  
+  const navigate = useNavigate();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
   const handleLogoutClick = () => setIsLogoutModalOpen(true);
-  
   const handleConfirmLogout = () => {
     setIsLogoutModalOpen(false);
-    console.log('Logged out');
-    // Navigate to sign-in page (optional)
+    window.location.href = '/login';
   };
-  
   const handleCancelLogout = () => setIsLogoutModalOpen(false);
 
-  // Determine active page based on current route
   const getActivePage = () => {
     const path = location.pathname;
-    if (path.includes('/user/home')) return 'Home';
-    if (path.includes('/user/report')) return 'Report';
-    if (path.includes('/user/settings')) return 'Settings';
-    if (path.includes('/user/alerts')) return 'Alerts';
-    return 'Home';
+    if (path.includes('/admin/dashboard')) return 'Dashboard';
+    if (path.includes('/admin/user-management')) return 'User Management';
+    if (path.includes('/admin/alerts-notifications')) return 'Alerts & Notifications';
+    if (path.includes('/admin/data-analytics-reports')) return 'Data Analytics & Reports';
+    if (path.includes('/admin/system-settings')) return 'System Settings';
+    if (path.includes('/admin/profile')) return 'Profile';
+    return 'Dashboard';
+  };
+
+  const handleNavigation = (page) => {
+    switch (page) {
+      case 'Dashboard':
+        navigate('/admin/dashboard');
+        break;
+      case 'User Management':
+        navigate('/admin/user-management');
+        break;
+      case 'Bin Management':
+        navigate('/admin/bin-management');
+        break;
+      case 'Alerts & Notifications':
+        navigate('/admin/alerts-notifications');
+        break;
+      case 'Data Analytics & Reports':
+        navigate('/admin/data-analytics-reports');
+        break;
+      case 'System Settings':
+        navigate('/admin/system-settings');
+        break;
+      case 'Profile':
+        navigate('/admin/profile');
+        break;
+      default:
+        navigate('/admin/dashboard');
+    }
   };
 
   return (
     <>
       <div className="flex h-screen bg-white">
-        <Sidebar 
-          activePage={getActivePage()} 
-          handleLogoutClick={handleLogoutClick} 
+        <SideBar
+          activePage={getActivePage()}
+          handleNavigation={handleNavigation}
+          handleLogoutClick={handleLogoutClick}
         />
-        <div className="flex-1 flex flex-col">
-          <Header />
-          <div className="flex-1">
-            <Routes>
-              <Route index element={<Navigate to="home" replace />} />
-              <Route path="home" element={<HomePage />} />
-              <Route path="report" element={<ReportPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="alerts" element={<AlertsPage />} />
-            </Routes>
-          </div>
+        <div className="flex-1 overflow-y-auto">
+          <Outlet />
         </div>
       </div>
       {isLogoutModalOpen && (
@@ -98,63 +102,33 @@ const UserLayoutWrapper = () => {
 };
 
 export default function App() {
-  const [activePage, setActivePage] = useState('Dashboard');
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
-  const handleNavigation = (page) => setActivePage(page);
-  const handleLogoutClick = () => setIsLogoutModalOpen(true);
-  
-  const handleConfirmLogout = () => {    setIsLogoutModalOpen(false);
-    console.log('Logged out');
-    // Navigate to sign-in page (optional)
-  };
-  
-  const handleCancelLogout = () => setIsLogoutModalOpen(false);
-
   return (
     <Router>
       <Routes>
         {/* Public Routes */}
-         <Route path="/login" element={<LoginForm />} />
-        
-          <Route path="/register" element={<RegisterForm />} />
-          <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/register" element={<RegisterForm />} />
 
-        {/* Admin Route */}
-        <Route
-          path="/admin/*"
-          element={
-            <>
-              <AdminLayout
-                activePage={activePage}
-                handleNavigation={handleNavigation}
-                handleLogoutClick={handleLogoutClick}
-              />
-              {isLogoutModalOpen && (
-                <LogoutModal
-                  show={isLogoutModalOpen}
-                  onConfirm={handleConfirmLogout}
-                  onCancel={handleCancelLogout}
-                />
-              )}
-            </>
-          }
-        />
+        {/*Admin Pages with Admin Layout and Nested Routing */}
+        <Route path="/admin" element={<AdminLayoutWrapper />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="user-management" element={<UserManagement />} />
+          <Route path="alerts-notifications" element={<AlertsNotifications />} />
+          <Route path="data-analytics-reports" element={<DataAnalyticsReports />} />
+          <Route path="system-settings" element={<SystemSettings />} />
+          <Route path="profile" element={<ProfilePage />} />
+        </Route>
 
-user_pages_development
-        {/* User Routes - Now properly connected */}
-        <Route path="/user/*" element={<UserLayoutWrapper />} />
-
-        {/* User Route */}
-      
-      <Route path="/user/*" element={<Layout />}>
+        {/*User Pages — unchanged and working */}
+        <Route path="/user/*" element={<Layout />}>
           <Route index element={<HomePage />} />
+          <Route path="home" element={<HomePage />} />
           <Route path="report" element={<ReportPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="alerts" element={<AlertsPage />} />
         </Route>
-    
- dev
       </Routes>
     </Router>
   );

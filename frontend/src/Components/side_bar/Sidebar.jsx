@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Home,  BarChart2,  Settings,  Bell,  LogOut } from 'lucide-react'; // Import Lucide icons
 
 const Sidebar = ({ activePage, handleLogoutClick }) => {
   const location = useLocation();
@@ -8,22 +9,22 @@ const Sidebar = ({ activePage, handleLogoutClick }) => {
     { 
       name: 'Home', 
       path: '/user/home', 
-      icon: '🏠' 
+      icon: <Home className="w-5 h-5" /> 
     },
     { 
       name: 'Report', 
       path: '/user/report', 
-      icon: '📊' 
+      icon: <BarChart2 className="w-5 h-5" />  
     },
     { 
       name: 'Settings', 
       path: '/user/settings', 
-      icon: '⚙️' 
+      icon: <Settings className="w-5 h-5" /> 
     },
     { 
       name: 'Alerts', 
       path: '/user/alerts', 
-      icon: '🔔' 
+      icon: <Bell className="w-5 h-5" />  
     },
   ];
 
@@ -61,7 +62,7 @@ const Sidebar = ({ activePage, handleLogoutClick }) => {
           onClick={handleLogoutClick}
           className="w-full flex items-center p-3 text-gray-300 hover:bg-red-600 hover:text-white rounded-lg transition-colors duration-200"
         >
-          <span className="mr-3 text-lg">🚪</span>
+          <LogOut className="mr-3 w-5 h-5" />
           <span className="font-medium">Logout</span>
         </button>
       </div>
