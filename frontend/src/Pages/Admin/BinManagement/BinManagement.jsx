@@ -1,3 +1,10 @@
+import { useState, useEffect } from 'react';
+import { Search, MapPin, Wifi, WifiOff, Plus } from 'lucide-react';
+import EditBinModal from '../../../Components/BinManagement/EditBinModal';
+import AddBinModal from '../../../Components/BinManagement/AddBinModal';
+import AssignMaintenanceModal from '../../../Components/BinManagement/AssignMaintenanceModal';
+import TopBar from '../../../Components/TopBar/TopBar';
+
 // Navigation Item Component
 function NavItem({ active, icon, text, onClick }) {
   return (
@@ -14,7 +21,7 @@ function NavItem({ active, icon, text, onClick }) {
 }
 
 export default function BinManagement() {
-  const [activePage, setActivePage] = useState('Bin Management');
+  const [activePage, setActivePage] = useState('/admin/bin-management');
   const [searchText, setSearchText] = useState('');
   const [selectedBin, setSelectedBin] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -171,82 +178,20 @@ export default function BinManagement() {
   );
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      {/* Left Sidebar */}
-      <div className="w-64 bg-green-700 text-white flex flex-col h-full fixed left-0 top-0 z-20">
-        <div className="p-4 text-2xl font-bold border-b border-green-600 text-center">CityBin</div>
-        
-        <nav className="flex-1">
-          <NavItem 
-            active={activePage === 'Dashboard'} 
-            icon={<BarChart2 size={20} />} 
-            text="Dashboard" 
-            onClick={() => handleNavigation('Dashboard')}
-          />
-          <NavItem 
-            active={activePage === 'User Management'} 
-            icon={<Users size={20} />} 
-            text="User Management" 
-            onClick={() => handleNavigation('User Management')}
-          />
-          <NavItem 
-            active={activePage === 'Bin Management'} 
-            icon={<Trash2 size={20} />} 
-            text="Bin Management" 
-            onClick={() => handleNavigation('Bin Management')}
-          />
-          <NavItem 
-            active={activePage === 'Data Analytics & Reports'} 
-            icon={<BarChart2 size={20} />} 
-            text="Data Analytics & Reports" 
-            onClick={() => handleNavigation('Data Analytics & Reports')}
-          />
-          <NavItem 
-            active={activePage === 'Alerts & Notifications'} 
-            icon={<Bell size={20} />} 
-            text="Alerts & Notifications" 
-            onClick={() => handleNavigation('Alerts & Notifications')}
-          />
-          <NavItem 
-            active={activePage === 'System Settings'} 
-            icon={<Settings size={20} />} 
-            text="System Settings" 
-            onClick={() => handleNavigation('System Settings')}
-          />
-        </nav>
-        
-        <div className="p-4 border-t border-green-600 flex justify-center">
-          <button className="flex items-center justify-center text-white hover:bg-green-800 p-2 rounded transition-colors duration-200 w-full">
-            <LogOut size={20} className="mr-2" />
-            Log Out
-          </button>
-        </div>
-      </div>
-      
-      {/* Main Content */}
+    
+           
+      <div className="flex h-screen bg-white">
       <div className="flex-1 flex flex-col ml-64 min-w-0 overflow-hidden">
         {/* Top Bar */}
-        <div className="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-10 flex-shrink-0">
-          <div className="text-xl font-bold">Bin Management</div>
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search something"
-                className="bg-gray-200 rounded-full pl-8 pr-4 py-1 w-64 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
-              <span className="absolute left-2 top-2 text-gray-500">🔍</span>
-            </div>
-            <div 
-              className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
-              onClick={() => handleNavigation('Profile')}
-            >
-              <User size={18} />
-            </div>
-          </div>
-        </div>
+        <div>
+             <TopBar
+               title="Bin Management"
+               searchText={searchText}
+               setSearchText={setSearchText}
+               onProfileClick={() => handleNavigation("/admin/profile")}
+             />
+           </div>
+       
         
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
@@ -435,249 +380,45 @@ export default function BinManagement() {
       </div>
 
       {/* Edit Modal */}
-      {showEditModal && selectedBin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">Edit Bin Information</h2>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Bin ID</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100 focus:outline-none"
-                value={selectedBin.id}
-                readOnly
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Location</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={selectedBin.location}
-                onChange={(e) => setSelectedBin(prev => ({ ...prev, location: e.target.value }))}
-              >
-                <option value="Main Library">Main Library</option>
-                <option value="Student Center">Student Center</option>
-                <option value="Engineering Faculty">Engineering Faculty</option>
-                <option value="Cafeteria Block A">Cafeteria Block A</option>
-                <option value="Sports Complex">Sports Complex</option>
-                <option value="Admin Building">Admin Building</option>
-                <option value="IT Faculty">IT Faculty</option>
-                <option value="Business Faculty">Business Faculty</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Waste Level</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100 focus:outline-none"
-                value={`${selectedBin.wasteLevel.toFixed(0)}%`}
-                readOnly
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Maintenance Status</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={selectedBin.maintenance}
-                onChange={(e) => setSelectedBin(prev => ({ ...prev, maintenance: e.target.value }))}
-              >
-                <option value="OK">OK</option>
-                <option value="Required">Required</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <button 
-                onClick={handleSave}
-                className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors"
-              >
-                Save
-              </button>
-              <button 
-                onClick={() => setShowEditModal(false)}
-                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+   {showEditModal && selectedBin && (
+  <EditBinModal
+    selectedBin={selectedBin}
+    setSelectedBin={setSelectedBin}
+    onSave={handleSave}
+    onClose={() => setShowEditModal(false)}
+  />
+)}
 
       {/* Add New Bin Modal */}
       {showAddBinModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 max-h-96 overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">Add New Bin</h2>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Bin ID</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                placeholder="e.g., SU06"
-                value={newBin.id}
-                onChange={(e) => setNewBin(prev => ({ ...prev, id: e.target.value }))}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Location</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={newBin.location}
-                onChange={(e) => setNewBin(prev => ({ ...prev, location: e.target.value }))}
-              >
-                <option value="">Select Location</option>
-                <option value="Main Library">Main Library</option>
-                <option value="Student Center">Student Center</option>
-                <option value="Engineering Faculty">Engineering Faculty</option>
-                <option value="Cafeteria Block A">Cafeteria Block A</option>
-                <option value="Cafeteria Block B">Cafeteria Block B</option>
-                <option value="Sports Complex">Sports Complex</option>
-                <option value="Admin Building">Admin Building</option>
-                <option value="IT Faculty">IT Faculty</option>
-                <option value="Business Faculty">Business Faculty</option>
-                <option value="Parking Area A">Parking Area A</option>
-                <option value="Auditorium">Auditorium</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Initial Waste Level (%)</label>
-              <input 
-                type="number"
-                min="0"
-                max="100"
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={newBin.wasteLevel}
-                onChange={(e) => setNewBin(prev => ({ ...prev, wasteLevel: parseInt(e.target.value) || 0 }))}
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Device Status</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={newBin.deviceStatus}
-                onChange={(e) => setNewBin(prev => ({ ...prev, deviceStatus: e.target.value }))}
-              >
-                <option value="online">Online</option>
-                <option value="offline">Offline</option>
-              </select>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Maintenance Status</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={newBin.maintenance}
-                onChange={(e) => setNewBin(prev => ({ ...prev, maintenance: e.target.value }))}
-              >
-                <option value="OK">OK</option>
-                <option value="Required">Required</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <button 
-                onClick={handleSaveNewBin}
-                className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors disabled:bg-gray-400"
-                disabled={!newBin.id || !newBin.location}
-              >
-                Add Bin
-              </button>
-              <button 
-                onClick={() => {
-                  setShowAddBinModal(false);
-                  setNewBin({
-                    id: '',
-                    location: '',
-                    wasteLevel: 0,
-                    maintenance: 'OK',
-                    coordinates: { lat: 6.7553, lng: 80.3392 },
-                    deviceStatus: 'online',
-                    lastUpdate: 'Just now'
-                  });
-                }}
-                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <AddBinModal
+    newBin={newBin}
+    setNewBin={setNewBin}
+    onSave={handleSaveNewBin}
+    onClose={() => {
+      setShowAddBinModal(false);
+      setNewBin({
+        id: '',
+        location: '',
+        wasteLevel: 0,
+        maintenance: 'OK',
+        coordinates: { lat: 6.7553, lng: 80.3392 },
+        deviceStatus: 'online',
+        lastUpdate: 'Just now'
+      });
+    }}
+  />
+)}
 
       {/* Assign Maintenance Modal */}
       {showMaintenanceModal && selectedBin && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96">
-            <h2 className="text-xl font-bold mb-4">Assign Maintenance</h2>
-            
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Bin ID</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100 focus:outline-none"
-                value={selectedBin.id}
-                readOnly
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Location</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100 focus:outline-none"
-                value={selectedBin.location}
-                readOnly
-              />
-            </div>
-
-            <div className="mb-4">
-              <label className="block text-sm font-medium mb-2">Current Waste Level</label>
-              <input 
-                type="text"
-                className="w-full border rounded px-3 py-2 bg-gray-100 focus:outline-none"
-                value={`${selectedBin.wasteLevel.toFixed(0)}%`}
-                readOnly
-              />
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium mb-2">Maintenance Status</label>
-              <select 
-                className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-                value={selectedBin.maintenance}
-                onChange={(e) => setSelectedBin(prev => ({ ...prev, maintenance: e.target.value }))}
-              >
-                <option value="OK">OK</option>
-                <option value="Required">Required</option>
-              </select>
-            </div>
-
-            <div className="flex gap-3">
-              <button 
-                onClick={handleAssign}
-                className="flex-1 bg-green-600 text-white py-2 rounded hover:bg-green-700 transition-colors"
-              >
-                Assign
-              </button>
-              <button 
-                onClick={() => setShowMaintenanceModal(false)}
-                className="flex-1 bg-red-600 text-white py-2 rounded hover:bg-red-700 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <AssignMaintenanceModal
+    selectedBin={selectedBin}
+    setSelectedBin={setSelectedBin}
+    onAssign={handleAssign}
+    onClose={() => setShowMaintenanceModal(false)}
+  />
+)}
     </div>
   );
 }
