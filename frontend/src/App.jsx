@@ -10,6 +10,7 @@ import RegisterForm from './pages/RegisterForm';
 import SideBar from './Components/SideBar/SideBar';
 import Dashboard from './Pages/Admin/Dashboard/Dashboard';
 import UserManagement from './Pages/Admin/UserManagement/UserManagement';
+import BinManagement from './Pages/Admin/BinManagement/BinManagement';
 import AlertsNotifications from './Pages/Admin/AlertsNotifications/AlertsNotifications';
 import SystemSettings from './Pages/Admin/SystemSettings/SystemSettings';
 import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyticsReports';
@@ -24,6 +25,7 @@ import AlertsPage from './Pages/User/Home/AlertsPage';
 import Header from './Components/Header/Header';
 import Layout from './Components/Layout/Layout';
 import Sidebar from './Components/side_bar/Sidebar';
+
 
 
 //ADMIN LAYOUT WRAPPER WITH LOGIC AND OUTLET SUPPORT
@@ -43,6 +45,7 @@ const AdminLayoutWrapper = () => {
     const path = location.pathname;
     if (path.includes('/admin/dashboard')) return 'Dashboard';
     if (path.includes('/admin/user-management')) return 'User Management';
+    if (path.includes('/admin/bin-management')) return 'Bin Management';
     if (path.includes('/admin/alerts-notifications')) return 'Alerts & Notifications';
     if (path.includes('/admin/data-analytics-reports')) return 'Data Analytics & Reports';
     if (path.includes('/admin/system-settings')) return 'System Settings';
@@ -111,17 +114,19 @@ export default function App() {
         <Route path="/register" element={<RegisterForm />} />
 
         {/*Admin Pages with Admin Layout and Nested Routing */}
-        <Route path="/admin" element={<AdminLayoutWrapper />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="user-management" element={<UserManagement />} />
-          <Route path="alerts-notifications" element={<AlertsNotifications />} />
-          <Route path="data-analytics-reports" element={<DataAnalyticsReports />} />
-          <Route path="system-settings" element={<SystemSettings />} />
-          <Route path="profile" element={<ProfilePage />} />
-        </Route>
+       <Route path="/admin/*" element={<AdminLayoutWrapper />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="user-management" element={<UserManagement />} />
+        <Route path="bin-management" element={<BinManagement />} />
+        <Route path="alerts-notifications" element={<AlertsNotifications />} />
+        <Route path="data-analytics-reports" element={<DataAnalyticsReports />} />
+        <Route path="system-settings" element={<SystemSettings />} />
+        <Route path="profile" element={<ProfilePage />} />
+      </Route>
 
-        {/*User Pages — unchanged and working */}
+      
+        {/*User Pages*/}
         <Route path="/user/*" element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="home" element={<HomePage />} />
