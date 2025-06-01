@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { User } from "lucide-react";
-import TopBar from "../../../Components/TopBar/TopBar"; // Adjust the path as needed
+import TopBar from "../../../Components/TopBar/TopBar"; 
+import api from "../../../api/axios";
 
 export default function SystemSettings({ handleNavigation }) {
   const [searchText, setSearchText] = useState("");
@@ -8,6 +9,7 @@ export default function SystemSettings({ handleNavigation }) {
   // Threshold states
   const [wasteType, setWasteType] = useState("Organic");
   const [threshold, setThreshold] = useState(75);
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   // Reminders states
   const [remindersEnabled, setRemindersEnabled] = useState(true);
@@ -15,7 +17,7 @@ export default function SystemSettings({ handleNavigation }) {
   const [emailEnabled, setEmailEnabled] = useState(true);
   const [smsEnabled, setSmsEnabled] = useState(true);
   const [appNotificationEnabled, setAppNotificationEnabled] = useState(true);
-
+  
   // Features states
   const [overflowAlertsEnabled, setOverflowAlertsEnabled] = useState(true);
   const [smartRouteEnabled, setSmartRouteEnabled] = useState(true);
@@ -27,10 +29,117 @@ export default function SystemSettings({ handleNavigation }) {
   ];
 
   const handleThresholdChange = (e) => setThreshold(e.target.value);
-  const saveThreshold = () => console.log(`Saved ${wasteType} threshold: ${threshold}%`);
-  const saveReminders = () => console.log("Saved reminder settings");
-  const refreshDevices = () => console.log("Refreshing device status");
-  const saveFeatures = () => console.log("Saved feature settings");
+ 
+
+  // Save threshold to backend (stub implementation)
+  const saveThreshold = async () => {
+  try {
+    const response = await api.put("/settings", {
+      wasteThresholds: {
+        [wasteType]: parseInt(threshold),
+      },
+    });
+
+    if (response.data.success) {
+      alert("Threshold saved successfully!");
+    }
+  } catch (error) {
+    console.error("Failed to save threshold:", error);
+    alert("Failed to save threshold.");
+  }
+};
+
+
+//save reminders to backend (stub implementation)
+const saveReminders = async () => {
+  try {
+    const response = await api.put("/settings", {
+      reminders: {
+        enabled: remindersEnabled,
+        time: reminderTime,
+        email: emailEnabled,
+        sms: smsEnabled,
+        appNotification: appNotificationEnabled,
+      },
+    });
+
+    if (response.data.success) {
+      alert("Reminders saved successfully!");
+    }
+  } catch (error) {
+    console.error("Failed to save reminders:", error);
+    alert("Failed to save reminders.");
+  }
+};
+
+
+
+
+ //Refresh device status from backend (stub implementation)
+const refreshDevices = () => {
+  api.get("/devices/refresh")
+    .then(() => alert("Device statuses refreshed"))
+    .catch((err) => console.error("Failed to refresh devices", err));
+};
+
+  
+//save features to backend (stub implementation)
+const saveFeatures = async () => {
+  try {
+    const response = await api.put("/settings", {
+      features: {
+        overflowAlerts: overflowAlertsEnabled,
+        smartRoute: smartRouteEnabled,
+      },
+    });
+
+    if (response.data.success) {
+      alert("Features saved successfully!");
+    }
+  } catch (error) {
+    console.error("Failed to save features:", error);
+    alert("Failed to save features.");
+  }
+};
+
+
+
+
+
+
+
+
+  useEffect(() => {
+  if (!hasLoaded) {
+    api.get("/settings")
+      .then((res) => {
+        const data = res.data;
+        if (data) {
+          setThreshold(data.wasteThresholds?.[wasteType] || 75); // only runs once at load
+          setRemindersEnabled(data.reminders?.enabled ?? true);
+          setReminderTime(data.reminders?.time || "09:00");
+          setEmailEnabled(data.reminders?.email ?? true);
+          setSmsEnabled(data.reminders?.sms ?? true);
+          setAppNotificationEnabled(data.reminders?.app ?? true);
+          setOverflowAlertsEnabled(data.features?.overflowAlerts ?? true);
+          setSmartRouteEnabled(data.features?.smartRoute ?? true);
+        }
+        setHasLoaded(true);
+      })
+      .catch((err) => {
+        console.error("Failed to load settings:", err);
+      });
+  } else {
+    // Only update threshold when wasteType changes *after* initial load
+    api.get("/settings")
+      .then((res) => {
+        const newThreshold = res.data?.wasteThresholds?.[wasteType];
+        if (newThreshold !== undefined) setThreshold(newThreshold);
+      })
+      .catch((err) => console.error("Failed to update threshold on wasteType change:", err));
+  }
+}, [wasteType, hasLoaded]);
+
 
   return (
     <div className="flex-1 flex flex-col ml-64">

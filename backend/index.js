@@ -5,6 +5,7 @@ const cors = require('cors');
 
 const authRouter = require('./routers/authRouter');
 const userRouter = require('./routers/userRouter');
+const settingsRouter = require('./routers/settingsRouter');
 
 const app = express();
 
@@ -27,6 +28,7 @@ mongoose.connect(process.env.MONGODB_URI)
 // Routes
 app.use('/api/auth', authRouter);
 app.use('/api/users', userRouter);
+app.use('/api/settings', settingsRouter);
 
 // Test route
 app.get('/', (req, res) => {
