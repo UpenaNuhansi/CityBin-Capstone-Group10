@@ -136,3 +136,38 @@ exports.assignMaintenance = async (req, res) => {
     });
   }
 };
+
+// Get bin by ID
+const getBinById = async (req, res) => {
+  try {
+    const bin = await Bin.findById(req.params.id);
+    if (!bin) {
+      return res.status(404).json({ message: 'Bin not found' });
+    }
+    res.status(200).json(bin);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+// Delete bin
+const deleteBin = async (req, res) => {
+  try {
+    const bin = await Bin.findByIdAndDelete(req.params.id);
+    if (!bin) {
+      return res.status(404).json({ message: 'Bin not found' });
+    }
+    res.status(200).json({ message: 'Bin deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+module.exports = {
+  createBin,
+  getAllBins,
+  updateBin,
+  getBinById,     
+  deleteBin      
+};
+
