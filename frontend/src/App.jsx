@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
+import ErrorBoundary from './Components/ErrorBoundary';
 
 // Common Pages
 import LandingPage from './pages/LandingPage';
@@ -118,7 +119,7 @@ export default function App() {
         <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="user-management" element={<UserManagement />} />
-        <Route path="bin-management" element={<BinManagement />} />
+        <Route path="bin-management" element={<ErrorBoundary><BinManagement /></ErrorBoundary>} />
         <Route path="alerts-notifications" element={<AlertsNotifications />} />
         <Route path="data-analytics-reports" element={<DataAnalyticsReports />} />
         <Route path="system-settings" element={<SystemSettings />} />

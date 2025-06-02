@@ -1,9 +1,9 @@
-// src/controllers/binController.js
-const Bin = require('../models/bin');
-const AppUser = require('../models/user');
+const Bin = require('../models/binModels');
+const AppUser = require('../models/User');
+const validator = require('../validators/binValidator');
 
 // Middleware to check if user is admin
-exports.isAdmin = async (req, res, next) => {
+const isAdmin = async (req, res, next) => {
   try {
     const user = await AppUser.findById(req.user._id);
     if (!user || user.role !== 'Admin') {
@@ -22,7 +22,7 @@ exports.isAdmin = async (req, res, next) => {
 };
 
 // Get all bins
-exports.getAllBins = async (req, res) => {
+const getAllBins = async (req, res) => {
   try {
     const bins = await Bin.find().populate('assignedTo', 'name email');
     res.status(200).json({
@@ -38,7 +38,7 @@ exports.getAllBins = async (req, res) => {
 };
 
 // Create a new bin
-exports.createBin = async (req, res) => {
+const createBin = async (req, res) => {
   try {
     const { binId, location, wasteLevel, maintenance, coordinates, deviceStatus } = req.body;
     if (!binId || !location || !coordinates || !coordinates.lat || !coordinates.lng) {
@@ -69,7 +69,7 @@ exports.createBin = async (req, res) => {
 };
 
 // Update a bin
-exports.updateBin = async (req, res) => {
+const updateBin = async (req, res) => {
   try {
     const { binId, location, wasteLevel, maintenance, coordinates, deviceStatus } = req.body;
     const bin = await Bin.findOneAndUpdate(
@@ -104,7 +104,7 @@ exports.updateBin = async (req, res) => {
 };
 
 // Assign maintenance to a user
-exports.assignMaintenance = async (req, res) => {
+const assignMaintenance = async (req, res) => {
   try {
     const { userId } = req.body;
     const bin = await Bin.findOne({ binId: req.params.binId });
@@ -136,3 +136,40 @@ exports.assignMaintenance = async (req, res) => {
     });
   }
 };
+
+// Get bin by ID
+const getBinById = async (req, res) => {
+  try {
+    const bin = await Bin.findOne({ binId: req.params.binId });
+    if (!bin) {
+      return res.status(404).json({ message: 'Bin not found' });
+    }
+    res.status(200).json(bin);
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+// Delete bin
+const deleteBin = async (req, res) => {
+  try {
+    const bin = await Bin.findOneAndDelete({ binId: req.params.binId });
+    if (!bin) {
+      return res.status(404).json({ message: 'Bin not found' });
+    }
+    res.status(200).json({ message: 'Bin deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server Error', error: error.message });
+  }
+};
+
+module.exports = {
+  isAdmin,
+  getAllBins,
+  createBin,
+  updateBin,
+  assignMaintenance,
+  getBinById,
+  deleteBin
+};
+

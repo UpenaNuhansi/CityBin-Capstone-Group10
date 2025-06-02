@@ -4,6 +4,8 @@ import EditBinModal from '../../../Components/BinManagement/EditBinModal';
 import AddBinModal from '../../../Components/BinManagement/AddBinModal';
 import AssignMaintenanceModal from '../../../Components/BinManagement/AssignMaintenanceModal';
 import TopBar from '../../../Components/TopBar/TopBar';
+import { getAllBins } from '../../../api/apiServices/binApi'; 
+import { createBin, updateBin, assignMaintenance } from '../../../api/apiServices/binApi';
 
 // Navigation Item Component
 function NavItem({ active, icon, text, onClick }) {
@@ -39,53 +41,7 @@ export default function BinManagement() {
   });
 
   // IoT device simulation data - Sabaragamuwa University locations
-  const [binData, setBinData] = useState([
-    { 
-      id: 'SU01', 
-      location: 'Main Library', 
-      wasteLevel: 76, 
-      maintenance: 'OK', 
-      coordinates: { lat: 6.7553, lng: 80.3392 },
-      deviceStatus: 'online',
-      lastUpdate: '2 min ago'
-    },
-    { 
-      id: 'SU02', 
-      location: 'Student Center', 
-      wasteLevel: 95, 
-      maintenance: 'Required', 
-      coordinates: { lat: 6.7560, lng: 80.3385 },
-      deviceStatus: 'online',
-      lastUpdate: '1 min ago'
-    },
-    { 
-      id: 'SU03', 
-      location: 'Engineering Faculty', 
-      wasteLevel: 52, 
-      maintenance: 'OK', 
-      coordinates: { lat: 6.7545, lng: 80.3400 },
-      deviceStatus: 'offline',
-      lastUpdate: '15 min ago'
-    },
-    { 
-      id: 'SU04', 
-      location: 'Cafeteria Block A', 
-      wasteLevel: 100, 
-      maintenance: 'Required', 
-      coordinates: { lat: 6.7558, lng: 80.3388 },
-      deviceStatus: 'online',
-      lastUpdate: '30 sec ago'
-    },
-    { 
-      id: 'SU05', 
-      location: 'Sports Complex', 
-      wasteLevel: 28, 
-      maintenance: 'OK', 
-      coordinates: { lat: 6.7550, lng: 80.3395 },
-      deviceStatus: 'online',
-      lastUpdate: '5 min ago'
-    }
-  ]);
+  const [binData, setBinData] = useState([]);
 
   // Calculate summary statistics
   const totalBins = binData.length;
@@ -94,20 +50,43 @@ export default function BinManagement() {
   const maintenanceBins = binData.filter(bin => bin.maintenance === 'Required').length;
 
   // Simulate real-time IoT data updates
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setBinData(prevData => 
-        prevData.map(bin => ({
-          ...bin,
-          wasteLevel: Math.min(100, Math.max(0, bin.wasteLevel + (Math.random() * 10 - 5))),
-          maintenance: bin.wasteLevel >= 90 ? 'Required' : 'OK',
-          lastUpdate: Math.random() > 0.7 ? 'Just now' : bin.lastUpdate
-        }))
-      );
-    }, 10000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setBinData(prevData => 
+  //       prevData.map(bin => ({
+  //         ...bin,
+  //         wasteLevel: Math.min(100, Math.max(0, bin.wasteLevel + (Math.random() * 10 - 5))),
+  //         maintenance: bin.wasteLevel >= 90 ? 'Required' : 'OK',
+  //         lastUpdate: Math.random() > 0.7 ? 'Just now' : bin.lastUpdate
+  //       }))
+  //     );
+  //   }, 10000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  useEffect(() => {
+  const fetchBins = async () => {
+    try {
+      const res = await getAllBins();
+      console.log('API response:', res.data); 
+      const formattedData = res.data.data.map(bin => ({
+        id: bin.binId,
+        location: bin.location,
+        wasteLevel: bin.wasteLevel,
+        maintenance: bin.maintenance,
+        coordinates: bin.coordinates,
+        deviceStatus: bin.deviceStatus,
+        lastUpdate: bin.lastUpdate,
+      }));
+      setBinData(formattedData);
+    } catch (err) {
+      console.error('Error fetching bins:', err);
+    }
+  };
+
+  fetchBins();
+}, []);
 
   const handleNavigation = (page) => {
     setActivePage(page);
@@ -135,43 +114,83 @@ export default function BinManagement() {
     setShowAddBinModal(true);
   };
 
-  const handleSave = () => {
-    setBinData(prevData => 
-      prevData.map(bin => 
-        bin.id === selectedBin.id ? selectedBin : bin
-      )
+  const handleSave = async () => {
+  try {
+    const payload = {
+      binId: selectedBin.id,
+      location: selectedBin.location,
+      coordinates: selectedBin.coordinates,
+      wasteLevel: selectedBin.wasteLevel,
+      maintenance: selectedBin.maintenance,
+      deviceStatus: selectedBin.deviceStatus
+    };
+    const res = await updateBin(selectedBin.id, payload);
+    setBinData(prev =>
+      prev.map(bin => bin.id === selectedBin.id ? {
+        id: res.data.data.binId,
+        ...res.data.data
+      } : bin)
     );
     setShowEditModal(false);
-  };
+  } catch (err) {
+    console.error('Error updating bin:', err);
+  }
+};
 
-  const handleAssign = () => {
-    setBinData(prevData => 
-      prevData.map(bin => 
-        bin.id === selectedBin.id 
-          ? { ...bin, maintenance: selectedBin.maintenance }
-          : bin
-      )
+  const handleAssign = async () => {
+  try {
+    // This assumes a `userId` exists. Need to replace this with actual logic.
+    const dummyUserId = 'YOUR_USER_ID'; //Need to replace this with real user ID
+    const res = await assignMaintenance(selectedBin.id, dummyUserId);
+    setBinData(prev =>
+      prev.map(bin => bin.id === selectedBin.id ? {
+        id: res.data.data.binId,
+        ...res.data.data
+      } : bin)
     );
     setShowMaintenanceModal(false);
-  };
+  } catch (err) {
+    console.error('Failed to assign maintenance:', err);
+  }
+};
 
-  const handleSaveNewBin = () => {
-    if (newBin.id && newBin.location) {
-      setBinData(prevData => [...prevData, {...newBin}]);
+  const handleSaveNewBin = async () => {
+  if (newBin.id && newBin.location) {
+    try {
+      const payload = {
+        binId: newBin.id,
+        location: newBin.location,
+        coordinates: newBin.coordinates,
+        wasteLevel: newBin.wasteLevel,
+        maintenance: newBin.maintenance,
+        deviceStatus: newBin.deviceStatus
+      };
+      const res = await createBin(payload);
+      setBinData(prev => [...prev, {
+        id: res.data.data.binId,
+        ...res.data.data
+      }]);
       setShowAddBinModal(false);
-      setNewBin({
-        id: '',
-        location: '',
-        wasteLevel: 0,
-        maintenance: 'OK',
-        coordinates: { lat: 6.7553, lng: 80.3392 },
-        deviceStatus: 'online',
-        lastUpdate: 'Just now'
-      });
+      resetNewBin();
+    } catch (err) {
+      console.error('Failed to create bin:', err);
     }
-  };
+  }
+};
 
-  // Filter bins based on search
+const resetNewBin = () => {
+  setNewBin({
+    id: '',
+    location: '',
+    wasteLevel: 0,
+    maintenance: 'OK',
+    coordinates: { lat: 6.7553, lng: 80.3392 },
+    deviceStatus: 'online',
+    lastUpdate: 'Just now'
+  });
+};
+
+  // Filter bins based on search input
   const filteredBins = binData.filter(bin => 
     bin.id.toLowerCase().includes(searchText.toLowerCase()) ||
     bin.location.toLowerCase().includes(searchText.toLowerCase())
