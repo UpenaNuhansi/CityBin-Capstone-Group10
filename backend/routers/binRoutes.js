@@ -1,4 +1,6 @@
 const express = require('express');
+const router = express.Router();
+
 const {
   getAllBins,
   createBin,
@@ -10,17 +12,15 @@ const {
 } = require('../controllers/binController');
 const { authenticate } = require('../controllers/authController');
 
-// Optional: Validators and Middleware
+//Validators and Middleware
 const { binValidationRules } = require('../validators/binValidator');
 const validate = require('../middlewares/validate');
-
-const router = express.Router();
 
 // Middleware to check authentication and admin access
 router.use(authenticate, isAdmin);
 
 // Routes
-router.get('/', getAllBins);
+router.get('/bins', getAllBins);
 router.post('/', binValidationRules, validate, createBin);
 router.get('/:binId', getBinById);
 router.put('/:binId', binValidationRules, validate, updateBin);
