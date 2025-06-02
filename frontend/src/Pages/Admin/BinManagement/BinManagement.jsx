@@ -69,6 +69,7 @@ export default function BinManagement() {
   const fetchBins = async () => {
     try {
       const res = await getAllBins();
+      console.log('API response:', res.data); 
       const formattedData = res.data.data.map(bin => ({
         id: bin.binId,
         location: bin.location,
@@ -327,10 +328,10 @@ const resetNewBin = () => {
                 <tbody>
                   {filteredBins.map((bin) => (
                     <tr 
-                      key={bin._id} 
+                      key={bin.id} 
                       className="hover:bg-green-100 border-b border-green-200"
                     >
-                      <td className="py-3 px-4 font-medium text-gray-700">{bin._id}</td>
+                      <td className="py-3 px-4 font-medium text-gray-700">{bin.id}</td>
                       <td className="py-3 px-4 text-gray-700">{bin.location}</td>
                       <td className="py-3 px-4">
                         <div className="flex items-center">
