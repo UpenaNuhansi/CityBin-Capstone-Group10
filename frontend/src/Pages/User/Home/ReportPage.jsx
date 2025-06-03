@@ -1,34 +1,57 @@
 import { useState } from 'react';
 import BinImage from "../../../assets/BIN.jpg";
 
-
 function ReportPage() {
   const [selectedProblem, setSelectedProblem] = useState('overflow');
   const [description, setDescription] = useState('');
   const [selectedBin, setSelectedBin] = useState('');
-  
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle form submission logic here
-    console.log({
-      bin: selectedBin,
-      problem: selectedProblem,
-      description
-    });
+  const [result, setResult] = useState("");
+
+  const onSubmit = async (event) => {
+    event.preventDefault();
+    setResult("Sending....");
     
-    // Reset form
-    setDescription('');
+    const formData = new FormData();
+    // Append your form data
+    formData.append("bin", selectedBin);
+    formData.append("problem", selectedProblem);
+    formData.append("description", description);
+    formData.append("access_key", "79d499f7-5159-4a35-a92e-7ab06804579d");
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        // Reset form
+        setSelectedBin('');
+        setSelectedProblem('overflow');
+        setDescription('');
+      } else {
+        console.log("Error", data);
+        setResult(data.message);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      setResult("An error occurred while submitting the form");
+    }
   };
-  
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">Report</h1>
       
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={onSubmit}>
         <div className="mb-6">
           <h2 className="text-xl mb-3">Select Bin</h2>
           <div className="relative">
             <select
+              name="bin"
               className="w-full bg-citybin-light-green border border-green-300 rounded-md py-3 px-4 appearance-none focus:outline-none focus:ring-2 focus:ring-green-500"
               value={selectedBin}
               onChange={(e) => setSelectedBin(e.target.value)}
@@ -54,8 +77,8 @@ function ReportPage() {
               <div className="relative">
                 <input
                   type="radio"
-                  className="opacity-0 absolute h-6 w-6"
                   name="problem"
+                  className="opacity-0 absolute h-6 w-6"
                   value="overflow"
                   checked={selectedProblem === 'overflow'}
                   onChange={() => setSelectedProblem('overflow')}
@@ -73,8 +96,8 @@ function ReportPage() {
               <div className="relative">
                 <input
                   type="radio"
-                  className="opacity-0 absolute h-6 w-6"
                   name="problem"
+                  className="opacity-0 absolute h-6 w-6"
                   value="damage"
                   checked={selectedProblem === 'damage'}
                   onChange={() => setSelectedProblem('damage')}
@@ -92,8 +115,8 @@ function ReportPage() {
               <div className="relative">
                 <input
                   type="radio"
-                  className="opacity-0 absolute h-6 w-6"
                   name="problem"
+                  className="opacity-0 absolute h-6 w-6"
                   value="gas"
                   checked={selectedProblem === 'gas'}
                   onChange={() => setSelectedProblem('gas')}
@@ -112,6 +135,7 @@ function ReportPage() {
         <div className="mb-6 w-230">
           <h2 className="text-xl mb-3">Description</h2>
           <textarea
+            name="description"
             className="w-full h-32 bg-citybin-light-green border border-green-300 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Enter additional details..."
             value={description}
@@ -128,6 +152,7 @@ function ReportPage() {
           </button>
         </div>
       </form>
+      <span>{result}</span>
       
       {/* Bin image - hidden on small screens */}
       <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
@@ -137,7 +162,6 @@ function ReportPage() {
           className="w-full"
         />
       </div>
-      
     </div>
   );
 }
