@@ -1,12 +1,11 @@
 const Bin = require('../models/binModels');
-const AppUser = require('../models/User');
+const User = require('../models/User');
 const validator = require('../validators/binValidator');
 
 // Middleware to check if user is admin
 const isAdmin = async (req, res, next) => {
   try {
-    const user = await AppUser.findById(req.user._id);
-    if (!user || user.role !== 'Admin') {
+    if (req.user.role !== 'Admin') {
       return res.status(403).json({
         status: 'fail',
         message: 'Access denied. Admin privileges required.'
@@ -21,10 +20,11 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
+
 // Get all bins
 const getAllBins = async (req, res) => {
   try {
-    const bins = await Bin.find().populate('assignedTo', 'name email');
+    const bins = await Bin.find().populate('assignedTo', 'username email');
     res.status(200).json({
       status: 'success',
       data: bins
@@ -114,8 +114,8 @@ const assignMaintenance = async (req, res) => {
         message: 'Bin not found'
       });
     }
-    const user = await AppUser.findById(userId);
-    if (!user || !['Operator', 'Manager'].includes(user.role)) {
+    const user = await User.findById(userId);
+    if (!user || user.role !== 'Operator') { // Only Operator for maintenance
       return res.status(400).json({
         status: 'fail',
         message: 'Invalid user or user role for maintenance'
