@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import ErrorBoundary from './Components/ErrorBoundary';
+import api from './api/axios';
 
 // Common Pages
-import LandingPage from './pages/LandingPage';
-import LoginForm from './pages/LoginForm';
-import RegisterForm from './pages/RegisterForm';
+import LandingPage from './Pages/LandingPage';
+import LoginForm from './Pages/LoginForm';
+import RegisterForm from './Pages/RegisterForm';
 
 // Admin Pages
 import SideBar from './Components/SideBar/SideBar';
@@ -34,58 +35,77 @@ const AdminLayoutWrapper = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+useEffect(() => {
+  const token = localStorage.getItem('token');
+  if (!token){
+    navigate('/login', { replace: true });
+    return;
+  } 
+
+  if (user.role === 'Operator') {
+    if (!['/admin/dashboard', '/admin/profile'].includes(location.pathname)) {
+      navigate('/admin/dashboard', { replace: true });
+    }
+  }
+}, [location.pathname, navigate, user.role]);
+
 
   const handleLogoutClick = () => setIsLogoutModalOpen(true);
   const handleConfirmLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('');
     setIsLogoutModalOpen(false);
-    window.location.href = '/login';
+    navigate('/login');
   };
   const handleCancelLogout = () => setIsLogoutModalOpen(false);
 
   const getActivePage = () => {
     const path = location.pathname;
-    if (path.includes('/admin/dashboard')) return 'Dashboard';
-    if (path.includes('/admin/user-management')) return 'User Management';
-    if (path.includes('/admin/bin-management')) return 'Bin Management';
-    if (path.includes('/admin/alerts-notifications')) return 'Alerts & Notifications';
-    if (path.includes('/admin/data-analytics-reports')) return 'Data Analytics & Reports';
-    if (path.includes('/admin/system-settings')) return 'System Settings';
-    if (path.includes('/admin/profile')) return 'Profile';
-    return 'Dashboard';
+    const pageMap = {
+      '/admin/dashboard': 'Dashboard',
+      '/admin/user-management': 'User Management',
+      '/admin/bin-management': 'Bin Management',
+      '/admin/alerts-notifications': 'Alerts & Notifications',
+      '/admin/data-analytics-reports': 'Data Analytics & Reports',
+      '/admin/system-settings': 'System Settings',
+      '/admin/profile': 'Profile'
+    };
+    return pageMap[path] || 'Dashboard';
   };
 
   const handleNavigation = (page) => {
-    switch (page) {
-      case 'Dashboard':
-        navigate('/admin/dashboard');
-        break;
-      case 'User Management':
-        navigate('/admin/user-management');
-        break;
-      case 'Bin Management':
-        navigate('/admin/bin-management');
-        break;
-      case 'Alerts & Notifications':
-        navigate('/admin/alerts-notifications');
-        break;
-      case 'Data Analytics & Reports':
-        navigate('/admin/data-analytics-reports');
-        break;
-      case 'System Settings':
-        navigate('/admin/system-settings');
-        break;
-      case 'Profile':
-        navigate('/admin/profile');
-        break;
-      default:
-        navigate('/admin/dashboard');
+    console.log('SideBar: Navigating to', page);
+    const routes = {
+      'Dashboard': '/admin/dashboard',
+      'User Management': '/admin/user-management',
+      'Bin Management': '/admin/bin-management',
+      'Alerts & Notifications': '/admin/alerts-notifications',
+      'Data Analytics & Reports': '/admin/data-analytics-reports',
+      'System Settings': '/admin/system-settings',
+      'Profile': '/admin/profile'
+    };
+    if (user.role === 'Operator' && !['Dashboard', 'Profile'].includes(page)) {
+      alert('Access denied. Operators can only access Dashboard and Profile.');
+      return;
+    }
+    const target = routes[page] || '/admin/dashboard';
+    if (location.pathname !== target) {
+      navigate(target);
     }
   };
+
+  if (!user.role || !['Admin', 'Operator'].includes(user.role)) {
+    console.log('AdminLayoutWrapper: Invalid role, redirecting to /login');
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <>
       <div className="flex h-screen bg-white">
         <SideBar
+          user={user}
           activePage={getActivePage()}
           handleNavigation={handleNavigation}
           handleLogoutClick={handleLogoutClick}
@@ -105,7 +125,48 @@ const AdminLayoutWrapper = () => {
   );
 };
 
-export default function App() {
+const UserLayoutWrapper = () => {
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token || user.role !== 'User') {
+      navigate('/login', { replace: true });
+    }
+  }, [navigate, user.role]);
+
+  const handleLogoutClick = () => setIsLogoutModalOpen(true);
+  
+  const handleConfirmLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLogoutModalOpen(false);
+    navigate('/login');
+  };
+
+  const handleCancelLogout = () => setIsLogoutModalOpen(false);
+
+  if (!user.role || user.role !== 'User') {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <Layout handleLogoutClick={handleLogoutClick}>
+      <Outlet />
+      {isLogoutModalOpen && (
+        <LogoutModal
+          show={isLogoutModalOpen}
+          onConfirm={handleConfirmLogout}
+          onCancel={handleCancelLogout}
+        />
+      )}
+    </Layout>
+  );
+};
+
+function App() {
   return (
     <Router>
       <Routes>
@@ -114,28 +175,33 @@ export default function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
 
-        {/*Admin Pages with Admin Layout and Nested Routing */}
-       <Route path="/admin/*" element={<AdminLayoutWrapper />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="user-management" element={<UserManagement />} />
-        <Route path="bin-management" element={<ErrorBoundary><BinManagement /></ErrorBoundary>} />
-        <Route path="alerts-notifications" element={<AlertsNotifications />} />
-        <Route path="data-analytics-reports" element={<DataAnalyticsReports />} />
-        <Route path="system-settings" element={<SystemSettings />} />
-        <Route path="profile" element={<ProfilePage />} />
-      </Route>
+        {/* Admin Routes */}
+        <Route path="/admin/*" element={<AdminLayoutWrapper />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<ErrorBoundary><Dashboard /></ErrorBoundary>} />
+          <Route path="user-management" element={<ErrorBoundary><UserManagement /></ErrorBoundary>} />
+          <Route path="bin-management" element={<ErrorBoundary><BinManagement /></ErrorBoundary>} />
+          <Route path="alerts-notifications" element={<ErrorBoundary><AlertsNotifications /></ErrorBoundary>} />
+          <Route path="data-analytics-reports" element={<ErrorBoundary><DataAnalyticsReports /></ErrorBoundary>} />
+          <Route path="system-settings" element={<ErrorBoundary><SystemSettings /></ErrorBoundary>} />
+          <Route path="profile" element={<ErrorBoundary><ProfilePage /></ErrorBoundary>} />
+        </Route>
 
       
         {/*User Pages*/}
-        <Route path="/user/*" element={<Layout />}>
+        <Route path="/user/*" element={<UserLayoutWrapper />}>
           <Route index element={<HomePage />} />
           <Route path="home" element={<HomePage />} />
           <Route path="report" element={<ReportPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="alerts" element={<AlertsPage />} />
         </Route>
+        
+         {/* Catch-all route */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
 }
+
+export default App;

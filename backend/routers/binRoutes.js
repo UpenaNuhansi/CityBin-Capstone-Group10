@@ -20,7 +20,7 @@ const validate = require('../middlewares/validate');
 router.use(authenticate, isAdmin);
 
 // Routes
-router.get('/bins', getAllBins);
+router.get('/', getAllBins);
 router.post('/', binValidationRules, validate, createBin);
 router.get('/:binId', getBinById);
 router.put('/:binId', binValidationRules, validate, updateBin);

@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Search, User } from 'lucide-react';
 import SensorStatus from '../../../Components/SensorStatus/SensorStatus';
 import TopBar from '../../../Components/TopBar/TopBar';
+import api from '../../../api/axios';
 
 const wasteData = [
   { month: 'May', value: 210 },
@@ -24,6 +25,7 @@ const recentActivity = [
 ];
 
 export default function Dashboard({ activePage, setActivePage, handleNavigation }) {
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
   const [searchText, setSearchText] = useState('');
   const [sensorStatus, setSensorStatus] = useState({
     'Sensor A': true,
@@ -32,6 +34,10 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
     'Sensor D': true,
     'Gateway 1': false
   });
+
+  useEffect(() => {
+    console.log('Dashboard.jsx: Rendering for user', user);
+  }, []);
 
   const toggleSensor = (name) => {
     setSensorStatus(prev => ({
@@ -51,6 +57,14 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
         onProfileClick={() => handleNavigation("/admin/profile")}
       />
     </div>
+
+    <div className="flex-1 p-4 bg-white">
+        <h2 className="text-2xl font-bold text-green-800">Welcome, {user.username || 'Admin'}!</h2>
+        <p className="mt-2 text-gray-600">This is the CityBin Admin Dashboard.</p>
+        <div className="mt-4 p-4 bg-green-100 rounded-lg">
+          <p className="text-green-800">Debug: Admin Dashboard Loaded Successfully</p>
+        </div>
+      </div>
 
       <div className="flex-1 p-4 bg-gray-100">
         <div className="grid grid-cols-4 gap-4 mb-4">

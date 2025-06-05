@@ -52,7 +52,4 @@ const binSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Ensure binId is unique
-binSchema.index({ binId: 1 }, { unique: true });
-
 module.exports = mongoose.model('Bin', binSchema);

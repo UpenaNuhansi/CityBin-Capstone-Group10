@@ -1,11 +1,24 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate  } from 'react-router-dom';
+import { useState } from 'react';
 
 import Header from "../Header/Header";
 import Sidebar from "../side_bar/Sidebar";
-
-
+import LogoutModal from '../LogoutModal/LogoutModal';
 
 function Layout() {
+  const navigate = useNavigate();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+
+  const handleLogoutClick = () => setIsLogoutModalOpen(true);
+
+  const handleConfirmLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLogoutModalOpen(false);
+    navigate('/login');
+  };
+
+  const handleCancelLogout = () => setIsLogoutModalOpen(false);
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Mobile sidebar toggle (for small screens) */}
@@ -20,7 +33,7 @@ function Layout() {
       
       {/* Sidebar - hidden on mobile, visible on medium screens and up */}
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar handleLogoutClick={handleLogoutClick}/>
       </div>
       
       {/* Main content area */}
@@ -30,7 +43,19 @@ function Layout() {
           <Outlet />
         </div>
       </div>
+    
+
+
+    {/* Logout confirmation modal */}
+      {isLogoutModalOpen && (
+        <LogoutModal
+          show={isLogoutModalOpen}
+          onConfirm={handleConfirmLogout}
+          onCancel={handleCancelLogout}
+        />
+      )}
     </div>
+
   );
 }
 

@@ -1,31 +1,30 @@
-import { Search, User } from "lucide-react";
+import React from 'react';
+import { Search, User } from 'lucide-react';
 
 export default function TopBar({ title, searchText, setSearchText, onProfileClick }) {
+  console.log('TopBar: Rendering with title', title);
+
   return (
-    
-    <div className="bg-white p-4 border-b flex justify-between items-center sticky top-0 z-10">
-      <div className="text-xl font-bold">{title}</div>
-      
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="Search something"
-          className="bg-gray-200 rounded-full pl-8 pr-4 py-1 w-64 focus:outline-none focus:ring-2 focus:ring-green-500 transition-all duration-200"
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
-        <span className="absolute left-2 top-2 text-gray-500">
-          <Search size={16} />
-        </span>
+    <div className="bg-white shadow-md p-4 flex items-center justify-between">
+      <h1 className="text-xl font-semibold text-green-800">{title}</h1>
+      <div className="flex items-center space-x-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          <input
+            type="text"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            placeholder="Search..."
+            className="pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-green-500"
+          />
+        </div>
+        <button
+          onClick={onProfileClick}
+          className="text-gray-600 hover:text-green-600"
+        >
+          <User size={24} />
+        </button>
       </div>
-      {/*profile icon align on the top bar..... */}
-      <div>
-             <div 
-       className="w-8 h-8 bg-green-700 rounded-full flex items-center justify-center text-white cursor-pointer hover:bg-green-800 transition-colors duration-200"
-        onClick={onProfileClick}
-      />
-        <User size={18} className="-mt-6 items-center ml-2 " color="white"/>
-      </div>
-      </div>
-      );
+    </div>
+  );
 }
