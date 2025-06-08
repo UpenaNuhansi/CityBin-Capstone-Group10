@@ -5,7 +5,7 @@ const binSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Bin ID is required'],
     unique: true,
-    trim: true
+    // trim: true
   },
   location: {
     type: String,
@@ -43,11 +43,17 @@ const binSchema = new mongoose.Schema({
     type: String,
     default: 'Just now'
   },
-  assignedTo: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'AppUser',
-    default: null
-  }
+  assignedOperator: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: 'User',
+  default: null
+},
+status: {
+  type: String,
+  enum: ['OK', 'Full', 'Maintenance Required'],
+  default: 'OK'
+},
+
 }, {
   timestamps: true
 });

@@ -1,99 +1,92 @@
-const Settings = require("../models/Settings");
+const Settings = require('../models/Settings');
+const Notification = require('../models/Notification');
 
-
-// GET /api/settings
 const getSettings = async (req, res) => {
   try {
     let settings = await Settings.findOne();
     if (!settings) {
-      settings = new Settings({});
-      await settings.save();
+      settings = await Settings.create({});
     }
-    res.json(settings);
+    res.status(200).json({ success: true, data: settings });
   } catch (error) {
     console.error('Error fetching settings:', error);
-    res.status(500).json({ message: 'Failed to load settings.' });
+    res.status(500).json({ success: false, message: 'Failed to load settings' });
   }
 };
 
-// PUT /api/settings
 const updateSettings = async (req, res) => {
   try {
-
-    console.log("PUT /settings body:", req.body); //debug log 
-
     let settings = await Settings.findOne();
     if (!settings) {
       settings = new Settings({});
     }
 
-    if (req.body.wasteThresholds) {
+    const { wasteThresholds, reminders, features, devices } = req.body;
+
+    if (wasteThresholds) {
       settings.wasteThresholds = {
-        ...settings.wasteThresholds,
-        ...req.body.wasteThresholds,
+        Organic: wasteThresholds.Organic || settings.wasteThresholds.Organic,
+        Recyclable: wasteThresholds.Recyclable || settings.wasteThresholds.Recyclable,
+        General: wasteThresholds.General || settings.wasteThresholds.General,
+        Hazardous: wasteThresholds.Hazardous || settings.wasteThresholds.Hazardous,
       };
     }
 
-    if (req.body.reminders) {
+    if (reminders) {
       settings.reminders = {
-        ...settings.reminders,
-        ...req.body.reminders,
+        enabled: reminders.enabled ?? settings.reminders.enabled,
+        time: reminders.time || settings.reminders.time,
+        email: reminders.email ?? settings.reminders.email,
+        sms: reminders.sms ?? settings.reminders.sms,
+        appNotification: reminders.appNotification ?? settings.reminders.appNotification,
       };
     }
 
-    if (req.body.features) {
+    if (features) {
       settings.features = {
-        ...settings.features,
-        ...req.body.features,
+        overflowAlerts: features.overflowAlerts ?? settings.features.overflowAlerts,
+        smartRoute: features.smartRoute ?? settings.features.smartRoute,
       };
+    }
+
+    if (devices) {
+      for (const [deviceId, newStatus] of Object.entries(devices)) {
+        const oldStatus = settings.devices.get(deviceId)?.status;
+        if (newStatus.status === 'Disconnected' && oldStatus !== 'Disconnected') {
+          await Notification.create({
+            message: `Device ${deviceId} is disconnected`,
+            userRole: 'Admin',
+            type: 'device',
+            status: 'Unread',
+          });
+        }
+        settings.devices.set(deviceId, {
+          status: newStatus.status,
+          lastSync: newStatus.lastSync || Date.now(),
+        });
+      }
     }
 
     await settings.save();
-    res.json({ success: true, settings });
-  } catch (error) {
-    console.error('Error updating settings:', error);
-    res.status(500).json({ success: false, message: 'Failed to update settings.' });
+    res.status(200).json({ success: true, data: settings });
+  } catch (err) {
+    console.error('Error updating settings:', err);
+    res.status(500).json({ success: false, message: 'Failed to update settings' });
+  }
+};
+
+const getDeviceStatuses = async (req, res) => {
+  try {
+    const settings = await Settings.findOne();
+    res.status(200).json({ success: true, data: settings?.devices || new Map() });
+  } catch (err) {
+    console.error('Error fetching device statuses:', err);
+    res.status(500).json({ success: false, message: 'Server error', error: err.message });
   }
 };
 
 module.exports = {
   getSettings,
   updateSettings,
+  getDeviceStatuses,
 };
-
-// RESET settings to default
-// export const resetSettings = async (req, res) => {
-//   try {
-//     const defaultSettings = {
-//       wasteThresholds: {
-//         Organic: 75,
-//         Recyclable: 75,
-//         General: 75,
-//         Hazardous: 75,
-//       },
-//       reminders: {
-//         enabled: true,
-//         time: "09:00",
-//         email: true,
-//         sms: true,
-//         appNotification: true,
-//       },
-//       features: {
-//         overflowAlerts: true,
-//         smartRoute: true,
-//       },
-//     };
-
-//     let settings = await Settings.findOne();
-//     if (!settings) {
-//       settings = await Settings.create(defaultSettings);
-//     } else {
-//       Object.assign(settings, defaultSettings);
-//       await settings.save();
-//     }
-
-//     res.json(settings);
-//   } catch (err) {
-//     res.status(500).json({ message: "Error resetting settings", error: err.message });
-//   }
-// };

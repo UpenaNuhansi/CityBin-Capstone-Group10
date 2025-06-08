@@ -7,6 +7,10 @@ const authRouter = require('./routers/authRouter');
 const userRouter = require('./routers/userRouter');
 const settingsRouter = require('./routers/settingsRouter');
 const binRoutes = require('./routers/binRoutes');
+const reportRoutes = require('./routers/reportRoutes');
+const notificationRoutes = require('./routers/notificationRoutes');
+const auth = require('./middlewares/auth');
+
 
 const app = express();
 
@@ -16,8 +20,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true, // Allow cookies to be sent
+  origin: process.env.NODE_ENV === 'production' ? 'https://your-production-domain.com' : 'http://localhost:5173',
+  credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -35,6 +39,8 @@ try {
   app.use('/api/users', userRouter);
   app.use('/api/settings', settingsRouter);
   app.use('/api/bins', binRoutes);
+  app.use('/api/reports', reportRoutes);
+  app.use('/api/notifications', notificationRoutes);
 } catch (err) {
   console.error('Route mounting error:', err);
   process.exit(1);
@@ -48,7 +54,7 @@ app.get('/', (req, res) => {
 //Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send('Something went wrong!');
 });
 
 const PORT = process.env.PORT || 5001;
