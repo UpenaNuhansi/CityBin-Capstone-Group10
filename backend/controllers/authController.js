@@ -1,62 +1,78 @@
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res) => {
+  const { username, email, password } = req.body;
+
   try {
-    const { username, email, password } = req.body;
-    
-    // Check existing user
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'Email already registered' });
     }
 
-    // Create user with plain text password
-    const newUser = await User.create({ username, email, password });
-    
+    const newUser = await User.create({
+      username,
+      email,
+      password,
+      role: 'User'
+    });
+
     res.status(201).json({
-      status: 'success',
-      data: newUser
+      success: true,
+      message: 'User registered successfully',
+      user: {
+        _id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role
+      }
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    console.error('Register Error:', err);
+    res.status(500).json({ success: false, message: 'Server error during registration' });
   }
 };
 
+
 exports.login = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    // For GET requests, we get parameters from query
-    const { email, password } = req.body;
-
-    // Check if parameters exist
-    if (!email || !password) {
-      return res.status(400).json({ message: 'Please provide email and password' });
-    }
-
-    // Find user with case-insensitive email match
-    const user = await User.findOne({ 
-      email: { $regex: new RegExp(`^${email}$`, 'i') } 
-    });
+    const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: 'No user found with this email' });
+      return res.status(400).json({ success: false, message: 'User not found' });
     }
 
-    // Compare passwords directly (since no hashing)
-    if (user.password !== password) {
-      return res.status(401).json({ message: 'Incorrect password' });
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: 'Incorrect password' });
     }
 
+    // Update lastLogin timestamp
+    user.lastLogin = new Date();
+    await user.save();
+
+    // Create token
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
+      expiresIn: '2h'
+    });
+
+    // Return token and user
     res.status(200).json({
-      status: 'success',
-      data: user
+      success: true,
+      message: 'Login successful',
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        username: user.username,
+        role: user.role,
+        lastLogin: user.lastLogin // to visible in frontend the last login
+      }
     });
   } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err.message
-    });
+    console.error('Login Error:', err);
+    res.status(500).json({ success: false, message: 'Server error during login' });
   }
 };

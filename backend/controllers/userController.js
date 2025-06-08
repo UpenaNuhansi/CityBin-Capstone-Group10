@@ -1,6 +1,24 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 const User = require('../models/User');
+
+// admin authorization middleware
+exports.isAdmin = async (req, res, next) => {
+  try {
+    if (req.user.role !== 'Admin') {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'Access denied. Admin privileges required.'
+      });
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Server error during authorization'
+    });
+  }
+};
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
@@ -24,13 +42,21 @@ exports.createUser = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({ username, email, password, role, status });
+    //let the model's pre-save hook handle password hashing
+    const newUser = await User.create({ 
+      username, 
+      email, 
+      password: hashedPassword, 
+      role: role || 'User', 
+      status: status || 'Active' 
+    });
     res.status(201).json({
       _id: newUser._id,
       username: newUser.username,
       email: newUser.email,
       role: newUser.role,
-      status: newUser.status
+      status: newUser.status,
+      lastLogin: newUser.lastLogin
     });
   } catch (err) {
     res.status(500).json({ message: 'Failed to create user', error: err.message });
@@ -43,7 +69,14 @@ exports.updateUser = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true });
+    if (updates.password) {
+      delete updates.password;
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true }).select('-password');
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     res.status(200).json(updatedUser);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update user', error: err.message });
@@ -54,8 +87,11 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-    await User.findByIdAndDelete(id);
-    res.status(204).send(); // No content
+    const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.status(204).send();
   } catch (err) {
     res.status(500).json({ message: 'Failed to delete user', error: err.message });
   }

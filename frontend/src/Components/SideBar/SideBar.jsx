@@ -1,16 +1,35 @@
-import { BarChart2, Settings, Users, Trash2, Bell, LogOut } from 'lucide-react';
+import { BarChart2, Settings, Users, Trash2, Bell, LogOut, User } from 'lucide-react';
 
-export default function SideBar({ activePage, handleNavigation, handleLogoutClick }) {
+function NavItem({ active, icon, text, onClick }) {
   return (
-    <div className="w-64 bg-green-700 text-white flex flex-col h-full fixed left-0 top-0">
-      <div className="p-4 text-2xl font-bold border-b border-green-600 text-center">CityBin</div>
-      <nav className="flex-1">
+    <div
+      className={`flex items-center p-4 cursor-pointer transition-colors duration-200 rounded-lg ${active === text ? 'bg-green-600 border-l-4 border-white' : 'hover:bg-green-700'}`}
+      onClick={() => onClick(text)}
+    >
+      {icon}
+      <span className="ml-3 text-white text-sm">{text}</span>
+    </div>
+  );
+}
+
+export default function SideBar({ user,activePage, handleNavigation, handleLogoutClick }) {
+    const isOperator = user?.role === 'Operator';
+
+  return (
+    <div className="fixed top-0 left-0 h-full w-64 bg-green-900 text-white flex flex-col shadow-lg">
+      <div className="p-4 text-xl font-bold border-b border-green-700">
+        CityBin Admin
+      </div>
+      <div className="flex-1 flex flex-col justify-between">
+        <div className="space-y-2">
         <NavItem 
           active={activePage === 'Dashboard'} 
           icon={<BarChart2 size={20} />} 
           text="Dashboard" 
           onClick={() => handleNavigation('Dashboard')}
         />
+        {!isOperator && (
+            <>
         <NavItem 
           active={activePage === 'User Management'} 
           icon={<Users size={20} />} 
@@ -41,26 +60,24 @@ export default function SideBar({ activePage, handleNavigation, handleLogoutClic
           text="System Settings" 
           onClick={() => handleNavigation('System Settings')}
         />
-      </nav>
-      <div className="p-4 border-t border-green-600 flex justify-center">
-        <button className="flex items-center justify-center text-white hover:bg-green-800 p-2 rounded transition-colors duration-200 w-full" onClick={handleLogoutClick}>
-          <LogOut size={20} className="mr-2" />
-          Log Out
-        </button>
+            </>
+        )}
+        <NavItem
+            active={activePage}
+            icon={<User size={20} />}
+            text="Profile"
+            onClick={handleNavigation}
+          />
+        </div>
+        <div>
+      <NavItem
+            active={activePage}
+            icon={<LogOut size={20} />}
+            text="Logout"
+            onClick={handleLogoutClick}
+          />
+        </div>
       </div>
-    </div>
-  );
-}
-
-function NavItem({ icon, text, active, onClick }) {
-  return (
-    <div 
-      className={`p-4 flex items-center cursor-pointer transition-colors duration-200 ${active ? 'bg-green-900' : 'hover:bg-green-600'}`}
-      onClick={onClick}
-    >
-      <span className="mr-2">{icon}</span>
-      <span>{text}</span>
-      {active && <span className="ml-auto">›</span>}
     </div>
   );
 }
