@@ -1,26 +1,15 @@
 import { useState, useEffect } from 'react';
-import { Search, MapPin, Wifi, WifiOff, Plus } from 'lucide-react';
+import { Search, Wifi, WifiOff, Plus } from 'lucide-react';
 import EditBinModal from '../../../Components/BinManagement/EditBinModal';
 import AddBinModal from '../../../Components/BinManagement/AddBinModal';
 import AssignMaintenanceModal from '../../../Components/BinManagement/AssignMaintenanceModal';
 import TopBar from '../../../Components/TopBar/TopBar';
-import { getAllBins } from '../../../api/apiServices/binApi'; 
-import { createBin, updateBin, assignMaintenance } from '../../../api/apiServices/binApi';
+import { getAllBins, createBin, updateBin, assignMaintenance } from '../../../api/apiServices/binApi';
+import BinMap from '../../../Components/BinManagement/BinMap';
+import { toast } from 'react-toastify';
+import api from '../../../api/axios';
 
-// Navigation Item Component
-function NavItem({ active, icon, text, onClick }) {
-  return (
-    <div 
-      className={`flex items-center p-4 cursor-pointer transition-colors duration-200 ${
-        active ? 'bg-green-800 border-r-4 border-white' : 'hover:bg-green-800'
-      }`}
-      onClick={onClick}
-    >
-      {icon}
-      <span className="ml-3">{text}</span>
-    </div>
-  );
-}
+
 
 export default function BinManagement() {
   const [activePage, setActivePage] = useState('/admin/bin-management');
@@ -39,58 +28,45 @@ export default function BinManagement() {
     deviceStatus: 'online',
     lastUpdate: 'Just now'
   });
-
-  // IoT device simulation data - Sabaragamuwa University locations
   const [binData, setBinData] = useState([]);
+  const [showOperatorPopup, setShowOperatorPopup] = useState(false);
+  const [selectedOperatorInfo, setSelectedOperatorInfo] = useState(null);
 
-  // Calculate summary statistics
   const totalBins = binData.length;
   const activeBins = binData.filter(bin => bin.deviceStatus === 'online').length;
   const fullBins = binData.filter(bin => bin.wasteLevel >= 90).length;
   const maintenanceBins = binData.filter(bin => bin.maintenance === 'Required').length;
 
-  // Simulate real-time IoT data updates
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     setBinData(prevData => 
-  //       prevData.map(bin => ({
-  //         ...bin,
-  //         wasteLevel: Math.min(100, Math.max(0, bin.wasteLevel + (Math.random() * 10 - 5))),
-  //         maintenance: bin.wasteLevel >= 90 ? 'Required' : 'OK',
-  //         lastUpdate: Math.random() > 0.7 ? 'Just now' : bin.lastUpdate
-  //       }))
-  //     );
-  //   }, 10000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
-
   useEffect(() => {
-  const fetchBins = async () => {
-    try {
-      const res = await getAllBins();
-      console.log('API response:', res.data); 
-      const formattedData = res.data.data.map(bin => ({
-        id: bin.binId,
-        location: bin.location,
-        wasteLevel: bin.wasteLevel,
-        maintenance: bin.maintenance,
-        coordinates: bin.coordinates,
-        deviceStatus: bin.deviceStatus,
-        lastUpdate: bin.lastUpdate,
-      }));
-      setBinData(formattedData);
-    } catch (err) {
-      console.error('Error fetching bins:', err);
-    }
-  };
+    const fetchBins = async () => {
+      try {
+        const res = await getAllBins();
+       const formattedData = res.data.data
+  .filter((bin) => bin.coordinates && typeof bin.coordinates.lat === 'number')
+  .map((bin) => ({
+    _id: bin._id,                     
+    binId: bin.binId,                
+    id: bin.binId,                   
+    location: bin.location,
+    wasteLevel: bin.wasteLevel,
+    maintenance: bin.maintenance,
+    coordinates: bin.coordinates,
+    deviceStatus: bin.deviceStatus,
+    lastUpdate: bin.lastUpdate,
+    assignedOperator: bin.assignedOperator || null
+  }));
 
-  fetchBins();
-}, []);
+
+        setBinData(formattedData);
+      } catch (err) {
+        console.error('Error fetching bins:', err);
+      }
+    };
+    fetchBins();
+  }, []);
 
   const handleNavigation = (page) => {
     setActivePage(page);
-    console.log(`Navigating to ${page}`);
   };
 
   const getWasteLevelColor = (level) => {
@@ -101,12 +77,12 @@ export default function BinManagement() {
   };
 
   const handleEdit = (bin) => {
-    setSelectedBin({...bin});
+    setSelectedBin({ ...bin });
     setShowEditModal(true);
   };
 
   const handleAssignMaintenance = (bin) => {
-    setSelectedBin({...bin});
+    setSelectedBin({ ...bin });
     setShowMaintenanceModal(true);
   };
 
@@ -114,108 +90,148 @@ export default function BinManagement() {
     setShowAddBinModal(true);
   };
 
-  const handleSave = async () => {
+const handleBinUpdate = async () => {
   try {
-    const payload = {
-      binId: selectedBin.id,
-      location: selectedBin.location,
-      coordinates: selectedBin.coordinates,
-      wasteLevel: selectedBin.wasteLevel,
-      maintenance: selectedBin.maintenance,
-      deviceStatus: selectedBin.deviceStatus
-    };
-    const res = await updateBin(selectedBin.id, payload);
-    setBinData(prev =>
-      prev.map(bin => bin.id === selectedBin.id ? {
-        id: res.data.data.binId,
-        ...res.data.data
-      } : bin)
-    );
+    const binId = selectedBin?.binId;
+    if (!binId) {
+      toast.error('No bin selected');
+      return;
+    }
+
+    if (selectedBin.maintenance === 'OK') {
+      await api.put(`/bins/${binId}/status`, {
+        status: 'OK',
+        operatorId: selectedBin.assignedOperator?._id || selectedBin.assignedOperator || null,
+      });
+
+      setBinData(prev =>
+        prev.map(bin =>
+          bin.binId === binId
+            ? { ...bin, maintenance: 'OK', assignedOperator: null }
+            : bin
+        )
+      );
+
+      toast.success('Bin marked as OK and operator unassigned');
+    } else {
+      const payload = {
+        binId: selectedBin.binId,
+        location: selectedBin.location,
+        coordinates: selectedBin.coordinates,
+        wasteLevel: selectedBin.wasteLevel,
+        maintenance: selectedBin.maintenance,
+        deviceStatus: selectedBin.deviceStatus,
+      };
+
+      await api.put(`/bins/${binId}`, payload);
+
+      setBinData(prev =>
+        prev.map(bin =>
+          bin.binId === binId ? { ...bin, ...payload } : bin
+        )
+      );
+
+      toast.success('Bin updated successfully');
+    }
+
     setShowEditModal(false);
   } catch (err) {
-    console.error('Error updating bin:', err);
+    console.error('Bin update error:', err);
+    toast.error('Failed to update bin');
   }
 };
 
-  const handleAssign = async () => {
+
+const handleAssign = async (operatorId) => {
   try {
-    // This assumes a `userId` exists. Need to replace this with actual logic.
-    const dummyUserId = 'YOUR_USER_ID'; //Need to replace this with real user ID
-    const res = await assignMaintenance(selectedBin.id, dummyUserId);
-    setBinData(prev =>
-      prev.map(bin => bin.id === selectedBin.id ? {
-        id: res.data.data.binId,
-        ...res.data.data
-      } : bin)
-    );
+    const res = await assignMaintenance(selectedBin.id, operatorId);
+
+setBinData(prev =>
+  prev.map(bin =>
+    bin.id === selectedBin.id
+      ? { ...bin, assignedOperator: res.data.data.assignedOperator }
+      : bin
+  )
+);
+
+
     setShowMaintenanceModal(false);
+    toast.success('Operator assigned successfully');
   } catch (err) {
     console.error('Failed to assign maintenance:', err);
+    toast.error('Failed to assign operator');
   }
 };
+
+
 
   const handleSaveNewBin = async () => {
-  if (newBin.id && newBin.location) {
-    try {
-      const payload = {
-        binId: newBin.id,
-        location: newBin.location,
-        coordinates: newBin.coordinates,
-        wasteLevel: newBin.wasteLevel,
-        maintenance: newBin.maintenance,
-        deviceStatus: newBin.deviceStatus
-      };
-      const res = await createBin(payload);
-      setBinData(prev => [...prev, {
-        id: res.data.data.binId,
-        ...res.data.data
-      }]);
-      setShowAddBinModal(false);
-      resetNewBin();
-    } catch (err) {
-      console.error('Failed to create bin:', err);
+    if (newBin.id && newBin.location) {
+      try {
+        const payload = {
+          binId: `CB${String(Date.now()).slice(-4)}`,
+          location: newBin.location,
+          coordinates: newBin.coordinates,
+          wasteLevel: newBin.wasteLevel,
+          maintenance: newBin.maintenance,
+          deviceStatus: newBin.deviceStatus
+        };
+        const res = await createBin(payload);
+        setBinData(prev => [...prev, {
+          id: res.data.data.binId,
+          ...res.data.data
+        }]);
+        setShowAddBinModal(false);
+        resetNewBin();
+      } catch (err) {
+        console.error('Failed to create bin:', err);
+      }
     }
+  };
+
+  const resetNewBin = () => {
+    setNewBin({
+      id: '',
+      location: '',
+      wasteLevel: 0,
+      maintenance: 'OK',
+      coordinates: { lat: 6.7553, lng: 80.3392 },
+      deviceStatus: 'online',
+      lastUpdate: 'Just now'
+    });
+  };
+
+  const openOperatorPopup = (operator, bin) => {
+  if (operator) {
+    setSelectedOperatorInfo({
+      name: operator.username,
+      email: operator.email,
+      binId: bin.id,
+      binLocation: bin.location,
+      notification: `Assigned on ${bin.lastUpdate || 'N/A'}`,
+    });
+    setShowOperatorPopup(true);
   }
 };
 
-const resetNewBin = () => {
-  setNewBin({
-    id: '',
-    location: '',
-    wasteLevel: 0,
-    maintenance: 'OK',
-    coordinates: { lat: 6.7553, lng: 80.3392 },
-    deviceStatus: 'online',
-    lastUpdate: 'Just now'
-  });
-};
 
-  // Filter bins based on search input
-  const filteredBins = binData.filter(bin => 
-    bin.id.toLowerCase().includes(searchText.toLowerCase()) ||
+  const filteredBins = binData.filter(bin =>
+    bin.binId.toLowerCase().includes(searchText.toLowerCase()) ||
     bin.location.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
-    
-           
-      <div className="flex h-screen bg-white">
+    <div className="flex h-screen bg-white">
       <div className="flex-1 flex flex-col ml-64 min-w-0 overflow-hidden">
-        {/* Top Bar */}
-        <div>
-             <TopBar
-               title="Bin Management"
-               searchText={searchText}
-               setSearchText={setSearchText}
-               onProfileClick={() => handleNavigation("/admin/profile")}
-             />
-           </div>
-       
-        
-        {/* Scrollable Content */}
+        <TopBar
+          title="Bin Management"
+          searchText={searchText}
+          setSearchText={setSearchText}
+          onProfileClick={() => handleNavigation("/admin/profile")}
+        />
+
         <div className="flex-1 overflow-y-auto">
           <div className="p-4">
-            {/* Summary Cards */}
             <div className="grid grid-cols-4 gap-4 mb-6">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
                 <div className="text-lg font-semibold text-green-800">Total Bins</div>
@@ -251,60 +267,18 @@ const resetNewBin = () => {
                     <Search size={16} className="absolute left-2 top-3 text-gray-500" />
                   </div>
                 </div>
-                
-                <div className="relative h-64 rounded-lg overflow-hidden border-2 border-green-200 bg-green-100">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-green-700 text-lg">Interactive Map View</div>
-                  </div>
-                  
-                  {/* Simulated map markers */}
-                  {filteredBins.map((bin, index) => (
-                    <div
-                      key={bin.id}
-                      className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer hover:scale-110 transition-transform"
-                      style={{
-                        left: `${20 + (index * 15)}%`,
-                        top: `${20 + (index * 12)}%`
-                      }}
-                      title={`${bin.id} - ${bin.location}: ${bin.wasteLevel}%`}
-                    >
-                      <div className="relative bg-white rounded-full p-2 shadow-lg">
-                        <MapPin 
-                          size={20} 
-                          className={`${bin.wasteLevel >= 90 ? 'text-red-600' : bin.wasteLevel >= 70 ? 'text-yellow-600' : 'text-green-600'}`}
-                          fill="currentColor"
-                        />
-                        {bin.deviceStatus === 'offline' && (
-                          <WifiOff size={12} className="absolute -top-1 -right-1 text-red-600" />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                  
-                  {/* Map legend */}
-                  <div className="absolute bottom-4 left-4 bg-white bg-opacity-95 px-3 py-2 rounded text-sm shadow-lg">
-                    <div className="font-medium mb-2">Bin Status</div>
-                    <div className="flex items-center mb-1">
-                      <div className="w-3 h-3 bg-green-600 rounded-full mr-2"></div>
-                      <span className="text-xs">Normal (&lt;70%)</span>
-                    </div>
-                    <div className="flex items-center mb-1">
-                      <div className="w-3 h-3 bg-yellow-600 rounded-full mr-2"></div>
-                      <span className="text-xs">Medium (70-89%)</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
-                      <span className="text-xs">Full (≥90%)</span>
-                    </div>
-                  </div>
+
+                {/*BinMap component */}
+                <div className="relative z-0">
+              <BinMap bins={filteredBins} onAssignClick={handleAssignMaintenance} />
                 </div>
+
               </div>
             </div>
 
-            {/* Table Header with Add Button */}
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold">Bin Management</h3>
-              <button 
+              <button
                 onClick={handleAddBin}
                 className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors duration-200 flex items-center"
               >
@@ -312,7 +286,8 @@ const resetNewBin = () => {
                 Add New Bin
               </button>
             </div>
-                       {/* Data Table */}
+
+             {/* Data Table */}
             <div className="border rounded-lg overflow-hidden bg-green-50">
               <table className="w-full">
                 <thead>
@@ -322,6 +297,7 @@ const resetNewBin = () => {
                     <th className="py-3 px-4 text-left font-semibold text-green-800">Waste Level</th>
                     <th className="py-3 px-4 text-left font-semibold text-green-800">Maintenance</th>
                     <th className="py-3 px-4 text-left font-semibold text-green-800">Device Status</th>
+                    <th className="py-3 px-4 text-left font-semibold text-green-800">Assigned To</th>
                     <th className="py-3 px-4 text-left font-semibold text-green-800">Actions</th>
                   </tr>
                 </thead>
@@ -389,6 +365,10 @@ const resetNewBin = () => {
                           </button>
                         </div>
                       </td>
+                      <td className="py-3 px-4 text-green-700 cursor-pointer underline"
+                        onClick={() => openOperatorPopup(bin.assignedOperator, bin)}>
+                          {bin.assignedOperator?.uniqueId || '—'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -401,11 +381,12 @@ const resetNewBin = () => {
       {/* Edit Modal */}
    {showEditModal && selectedBin && (
   <EditBinModal
-    selectedBin={selectedBin}
-    setSelectedBin={setSelectedBin}
-    onSave={handleSave}
-    onClose={() => setShowEditModal(false)}
-  />
+  selectedBin={selectedBin}
+  setSelectedBin={setSelectedBin}
+  onSave={handleBinUpdate}
+  onClose={() => setSelectedBin(null)}
+/>
+
 )}
 
       {/* Add New Bin Modal */}
@@ -432,12 +413,37 @@ const resetNewBin = () => {
       {/* Assign Maintenance Modal */}
       {showMaintenanceModal && selectedBin && (
   <AssignMaintenanceModal
-    selectedBin={selectedBin}
-    setSelectedBin={setSelectedBin}
-    onAssign={handleAssign}
-    onClose={() => setShowMaintenanceModal(false)}
-  />
+  isOpen={showMaintenanceModal}
+  onClose={() => setShowMaintenanceModal(false)}
+  onAssign={handleAssign} // ← used when the assign button is clicked
+  selectedBin={selectedBin}
+/>
 )}
+
+
+
+
+{showOperatorPopup && selectedOperatorInfo && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999]">
+    <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+      <h2 className="text-lg font-semibold mb-4">Operator Assignment Info</h2>
+      <p><strong>Name:</strong> {selectedOperatorInfo.name}</p>
+      <p><strong>Email:</strong> {selectedOperatorInfo.email}</p>
+      <p><strong>Bin ID:</strong> {selectedOperatorInfo.binId}</p>
+      <p><strong>Location:</strong> {selectedOperatorInfo.binLocation}</p>
+      <p><strong>Notification:</strong> {selectedOperatorInfo.notification}</p>
+      <button
+        onClick={() => setShowOperatorPopup(false)}
+        className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+      >
+        Close
+      </button>
     </div>
+  </div>
+)}
+
+    </div>
+    
   );
+  
 }

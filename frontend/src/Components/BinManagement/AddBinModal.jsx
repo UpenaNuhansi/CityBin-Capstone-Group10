@@ -10,31 +10,74 @@ export default function AddBinModal({ newBin, setNewBin, onSave, onClose }) {
           <input
             type="text"
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            placeholder="e.g., SU06"
+            placeholder="e.g., CB001"
             value={newBin.id}
             onChange={e => setNewBin(prev => ({ ...prev, id: e.target.value }))}
           />
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Location</label>
-          <select
+         <select
+              className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              value={newBin.location}
+              onChange={(e) => {
+                const [lat, lng] = e.target.value.split(',');
+                setNewBin(prev => ({
+                  ...prev,
+                  location: e.target.options[e.target.selectedIndex].text, // store location name
+                  latitude: lat,
+                  longitude: lng
+                }));
+              }}
+            >
+              <option value="">Select Location</option>
+              <option value="6.7571,80.3368">Main Entrance Gate</option>
+              <option value="6.7553,80.3392">Faculty of Applied Sciences (FAS)</option>
+              <option value="6.7557,80.3407">Faculty of Geomatics</option>
+              <option value="6.7566,80.3400">Faculty of Agricultural Sciences</option>
+              <option value="6.7549,80.3379">Faculty of Management Studies</option>
+              <option value="6.7544,80.3385">Faculty of Social Sciences & Languages</option>
+              <option value="6.7550,80.3388">Administration Building</option>
+              <option value="6.7552,80.3390">Library</option>
+              <option value="6.7562,80.3366">Hostels (Male)</option>
+              <option value="6.7542,80.3398">Hostels (Female)</option>
+              <option value="6.7551,80.3382">University Canteen</option>
+              <option value="6.7567,80.3355">Playground / Gymnasium</option>
+              <option value="6.7556,80.3370">Health Center</option>
+              <option value="6.7546,80.3389">Open Theater</option>
+              <option value="6.7560,80.3376">Vehicle Parking Area</option>
+            </select>
+
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Latitude</label>
+          <input
+            type="number"
+            step="0.000001"
+            min="-90"
+            max="90"
             className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
-            value={newBin.location}
-            onChange={e => setNewBin(prev => ({ ...prev, location: e.target.value }))}
-          >
-            <option value="">Select Location</option>
-            <option value="Main Library">Main Library</option>
-            <option value="Student Center">Student Center</option>
-            <option value="Engineering Faculty">Engineering Faculty</option>
-            <option value="Cafeteria Block A">Cafeteria Block A</option>
-            <option value="Cafeteria Block B">Cafeteria Block B</option>
-            <option value="Sports Complex">Sports Complex</option>
-            <option value="Admin Building">Admin Building</option>
-            <option value="IT Faculty">IT Faculty</option>
-            <option value="Business Faculty">Business Faculty</option>
-            <option value="Parking Area A">Parking Area A</option>
-            <option value="Auditorium">Auditorium</option>
-          </select>
+            value={newBin.coordinates?.lat || ''}
+            onChange={e => setNewBin(prev => ({
+              ...prev,
+              coordinates: { ...prev.coordinates, lat: parseFloat(e.target.value) || 0 }
+            }))}
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium mb-2">Longitude</label>
+          <input
+            type="number"
+            step="0.000001"
+            min="-180"
+            max="180"
+            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            value={newBin.coordinates?.lng || ''}
+            onChange={e => setNewBin(prev => ({
+              ...prev,
+              coordinates: { ...prev.coordinates, lng: parseFloat(e.target.value) || 0 }
+            }))}
+          />
         </div>
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Initial Waste Level (%)</label>
@@ -50,7 +93,7 @@ export default function AddBinModal({ newBin, setNewBin, onSave, onClose }) {
         <div className="mb-4">
           <label className="block text-sm font-medium mb-2">Device Status</label>
           <select
-            className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="-sql w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
             value={newBin.deviceStatus}
             onChange={e => setNewBin(prev => ({ ...prev, deviceStatus: e.target.value }))}
           >
@@ -73,7 +116,7 @@ export default function AddBinModal({ newBin, setNewBin, onSave, onClose }) {
           <button
             onClick={onSave}
             className="flex-1 bg-green-900 text-white py-2 rounded hover:bg-green-700 transition-colors disabled:bg-green-700"
-            disabled={!newBin.id || !newBin.location}
+            disabled={!newBin.id || !newBin.location || !newBin.coordinates?.lat || !newBin.coordinates?.lng}
           >
             Add Bin
           </button>
