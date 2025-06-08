@@ -1,30 +1,39 @@
 const express = require('express');
 const router = express.Router();
-
 const {
   getAllBins,
   createBin,
   updateBin,
   assignMaintenance,
-  deleteBin,
   getBinById,
-  isAdmin,
+  deleteBin,
+  getUserBinStatus,
+  updateBinStatus,
+  getBinsAssignedToOperator,
+  getBinStats
 } = require('../controllers/binController');
-const { authenticate } = require('../controllers/authController');
+const auth = require('../middlewares/auth');
+const adminOnly = require('../middlewares/adminOnly');
 
-//Validators and Middleware
-const { binValidationRules } = require('../validators/binValidator');
-const validate = require('../middlewares/validate');
+// Admin-protected routes
+router.get('/', auth, adminOnly, getAllBins);
+router.post('/', auth, adminOnly, createBin);
+router.get('/:binId', auth, adminOnly, getBinById);
+router.put('/:binId', auth, adminOnly, updateBin);
+router.delete('/:binId', auth, adminOnly, deleteBin);
 
-// Middleware to check authentication and admin access
-router.use(authenticate, isAdmin);
+// Assign operator to bin for maintenance
+router.post('/:binId/maintenance', auth, adminOnly, assignMaintenance);
 
-// Routes
-router.get('/', getAllBins);
-router.post('/', binValidationRules, validate, createBin);
-router.get('/:binId', getBinById);
-router.put('/:binId', binValidationRules, validate, updateBin);
-router.post('/:binId/maintenance', assignMaintenance);
-router.delete('/:binId', deleteBin);
+// Update bin status (e.g., to OK)
+router.put('/:binId/status', auth, updateBinStatus);
+
+router.get('/bins/assigned-to-operator', auth, getBinsAssignedToOperator);
+
+// Operator/user-specific route
+router.get('/user-status', auth, getUserBinStatus);
+
+// GET /api/bins/stats
+router.get('/stats', getBinStats);
 
 module.exports = router;

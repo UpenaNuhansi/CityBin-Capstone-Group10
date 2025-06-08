@@ -24,7 +24,8 @@ exports.register = async (req, res) => {
         _id: newUser._id,
         username: newUser.username,
         email: newUser.email,
-        role: newUser.role
+        role: newUser.role,
+        uniqueId: newUser.uniqueId
       }
     });
   } catch (err) {
@@ -68,6 +69,7 @@ exports.login = async (req, res) => {
         email: user.email,
         username: user.username,
         role: user.role,
+        uniqueId: user.uniqueId,
         lastLogin: user.lastLogin // to visible in frontend the last login
       }
     });

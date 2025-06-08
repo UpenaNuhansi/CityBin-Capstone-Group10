@@ -1,21 +1,35 @@
+require('dotenv').config();
 const mongoose = require('mongoose');
 const User = require('../models/User');
-require('dotenv').config();
 
-mongoose.connect(process.env.MONGODB_URI)
-  .then(async () => {
-    console.log('MongoDB connected!');
-    
-    await User.deleteMany({ role: 'Admin' });
-    await User.create({
-      username: 'admin',
-      email: 'admin@citybin.com',
-      password: 'Admin123', // Hashed by bcrypt
-      role: 'Admin',
-      status: 'Active'
+const seedAdmin = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
     });
 
-    console.log('Admin user created!');
-    mongoose.connection.close();
-  })
-  .catch(err => console.error('DB error:', err));
+    const adminExists = await User.findOne({ role: 'Admin' });
+    if (adminExists) {
+      console.log(' Admin already exists');
+      return;
+    }
+
+    const admin = new User({
+      username: 'Admin',
+      email: 'admin@citybin.com',
+      password: 'Admin1234', // plain password - will be hashed in pre('save')
+      role: 'Admin'
+    });
+
+    await admin.save(); //  this will now auto-hash + assign uniqueId via Counter
+
+    console.log(' Admin seeded successfully!');
+  } catch (err) {
+    console.error(' Error seeding admin:', err);
+  } finally {
+    await mongoose.connection.close();
+  }
+};
+
+seedAdmin();

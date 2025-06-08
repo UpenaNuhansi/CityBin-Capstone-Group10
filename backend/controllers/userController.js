@@ -1,98 +1,134 @@
 const bcrypt = require('bcryptjs');
-
 const User = require('../models/User');
 
-// admin authorization middleware
-exports.isAdmin = async (req, res, next) => {
+const getAllUsers = async (req, res) => {
   try {
-    if (req.user.role !== 'Admin') {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'Access denied. Admin privileges required.'
-      });
-    }
-    next();
+    const users = await User.find({}, 'username email role uniqueId status lastLogin');
+    res.status(200).json({ success: true, data: users });
   } catch (err) {
-    res.status(500).json({
-      status: 'error',
-      message: 'Server error during authorization'
-    });
+    console.error('Error fetching users:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// Get all users
-exports.getAllUsers = async (req, res) => {
+const getOperatorsOnly = async (req, res) => {
   try {
-    const users = await User.find().select('-password'); // Do not return password
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to fetch users', error: err.message });
+    const operators = await User.find({ role: 'Operator' }).select('-password');
+    res.status(200).json({ success: true, data: operators });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to fetch operators' });
   }
 };
 
-// Create a new user
-exports.createUser = async (req, res) => {
+
+const createUser = async (req, res) => {
   try {
     const { username, email, password, role, status } = req.body;
 
+    if (!username || !email || !password || !role) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
+    }
+
+    if (!['User', 'Admin', 'Operator'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' });
+    }
+
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ success: false, message: 'User already exists' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    //let the model's pre-save hook handle password hashing
     const newUser = await User.create({ 
       username, 
       email, 
       password: hashedPassword, 
-      role: role || 'User', 
+      role, 
       status: status || 'Active' 
     });
+
     res.status(201).json({
-      _id: newUser._id,
-      username: newUser.username,
-      email: newUser.email,
-      role: newUser.role,
-      status: newUser.status,
-      lastLogin: newUser.lastLogin
+      success: true,
+      data: {
+        _id: newUser._id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
+        uniqueId: newUser.uniqueId,
+        status: newUser.status,
+        lastLogin: newUser.lastLogin
+      }
     });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to create user', error: err.message });
+    console.error('Error creating user:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// Update user
-exports.updateUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updates = req.body;
+const updateUser = async (req, res) => {
+  const { userId } = req.params;
+  const { username, role, status } = req.body;
 
-    if (updates.password) {
-      delete updates.password;
+  try {
+    if (!username || !role || !status) {
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
 
-    const updatedUser = await User.findByIdAndUpdate(id, updates, { new: true }).select('-password');
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'User not found' });
+    if (!['User', 'Admin', 'Operator'].includes(role)) {
+      return res.status(400).json({ success: false, message: 'Invalid role' });
     }
-    res.status(200).json(updatedUser);
-  } catch (err) {
-    res.status(500).json({ message: 'Failed to update user', error: err.message });
-  }
-};
 
-// Delete user
-exports.deleteUser = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const user = await User.findByIdAndDelete(id);
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { username, role, status },
+      { new: true, select: 'username email role uniqueId status lastLogin' }
+    );
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
-    res.status(204).send();
+
+    res.status(200).json({ success: true, data: user });
   } catch (err) {
-    res.status(500).json({ message: 'Failed to delete user', error: err.message });
+    console.error('Error updating user:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
   }
+};
+
+const deleteUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.status(200).json({ success: true, message: 'User deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting user:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+const getUserRewards = async (req, res) => {
+  try {
+    // Mock rewards data (replace with actual logic)
+    const rewards = {
+      points: 100,
+      stars: 3
+    };
+    res.status(200).json({ success: true, data: rewards });
+  } catch (err) {
+    console.error('Error fetching rewards:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+module.exports = {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  getUserRewards,
+  getOperatorsOnly
 };
