@@ -115,5 +115,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-
-//need to profile edit option and reset password functionality
