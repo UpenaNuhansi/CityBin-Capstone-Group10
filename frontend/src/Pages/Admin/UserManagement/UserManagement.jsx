@@ -1,71 +1,40 @@
 import { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
 import TopBar from '../../../Components/TopBar/TopBar';
-import AddUserModal from '../../../Components/UserManagement/AddUserModal';
 import EditUserModal from '../../../Components/UserManagement/EditUserModal';
 import DeleteUserModal from '../../../Components/UserManagement/DeleteUserModal';
 import Notification from '../../../Components/UserManagement/Notification';
-// Axios instance
 import api from '../../../api/axios';
 
-export default function UserManagement() {
+export default function UserManagement({ handleNavigation }) {
   const [users, setUsers] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const [showAddDialog, setShowAddDialog] = useState(false);
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [editFormData, setEditFormData] = useState({ username: '', role: 'User', status: 'Active' });
-  const [addFormData, setAddFormData] = useState({ username: '', role: 'User', email: '', password: '', status: 'Active' });
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch users from backend on page load
   useEffect(() => {
     console.log('UserManagement: Fetching users');
     fetchUsers();
-  }, []); 
+  }, []);
 
-  const fetchUsers = async () => {
-    try {
-      setIsLoading(true);
-      const res = await api.get('/users', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setUsers(res.data);
-      console.log('UserManagement: Users fetched', res.data);
-    } catch (err) {
-      console.error('UserManagement: Fetch error', err);
-      showNotification('Failed to fetch users', 'error');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+ const fetchUsers = async () => {
+  try {
+    setIsLoading(true);
+    const res = await api.get('/users');
+    console.log('Fetched users response:', res.data); // log the actual structure
+    setUsers(res.data.data); // is this an array?
+  } catch (err) {
+    console.error('UserManagement: Fetch error', err);
+    showNotification('Failed to fetch users', 'error');
+  } finally {
+    setIsLoading(false);
+  }
+};
 
-  const handleAddUser = () => {
-    setAddFormData({ username: '', role: 'User', email: '', password: '', status: 'Active' });
-    setShowAddDialog(true);
-  };
-
- const handleAddFormChange = (e) => {
-    const { name, value } = e.target;
-    setAddFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleAddSave = async () => {
-    try {
-      const res = await api.post('/users', addFormData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
-      setUsers([...users, res.data]);
-      setShowAddDialog(false);
-      showNotification('User successfully added!', 'success');
-      console.log('UserManagement: User added', res.data);
-    } catch (err) {
-      console.error('UserManagement: Add error', err);
-      showNotification('Failed to add user', 'error');
-    }
-  };
 
   const handleEditUser = (userId) => {
     const user = users.find((u) => u._id === userId);
@@ -73,7 +42,6 @@ export default function UserManagement() {
       setCurrentUser(user);
       setEditFormData({ username: user.username, role: user.role, status: user.status });
       setShowEditDialog(true);
-      console.log('UserManagement: Editing user', userId);
     }
   };
 
@@ -84,15 +52,12 @@ export default function UserManagement() {
 
   const handleEditSave = async () => {
     try {
-      const res = await api.put(`/users/${currentUser._id}`, editFormData, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      const res = await api.put(`/users/${currentUser._id}`, editFormData);
       setUsers(users.map((user) => (user._id === currentUser._id ? res.data : user)));
       setShowEditDialog(false);
       showNotification('User successfully updated!', 'success');
-      console.log('UserManagement: User updated', res.data);
     } catch (err) {
-      console.error('UserManagement: Edit error', err);
+      console.error('UserManagement: Edit error', err.response?.data || err.message);
       showNotification('Failed to update user', 'error');
     }
   };
@@ -102,21 +67,17 @@ export default function UserManagement() {
     if (user) {
       setCurrentUser(user);
       setShowDeleteDialog(true);
-      console.log('UserManagement: Deleting user', userId);
     }
   };
 
   const handleConfirmDelete = async () => {
     try {
-      await api.delete(`/users/${currentUser._id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
-      });
+      await api.delete(`/users/${currentUser._id}`);
       setUsers(users.filter((user) => user._id !== currentUser._id));
       setShowDeleteDialog(false);
       showNotification('User successfully deleted!', 'success');
-      console.log('UserManagement: User deleted', currentUser._id);
     } catch (err) {
-      console.error('UserManagement: Delete error', err);
+      console.error('UserManagement: Delete error', err.response?.data || err.message);
       showNotification('Failed to delete user', 'error');
     }
   };
@@ -126,11 +87,16 @@ export default function UserManagement() {
     setTimeout(() => setNotification({ show: false, message: '', type: '' }), 3000);
   };
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.username.toLowerCase().includes(searchText.toLowerCase()) ||
-      user._id.toLowerCase().includes(searchText.toLowerCase())
-  );
+ const filteredUsers = Array.isArray(users)
+  ? users.filter((user) => {
+      const username = user.username?.toLowerCase() || '';
+      const uniqueId = user.uniqueId?.toLowerCase() || '';
+      const query = searchText.toLowerCase();
+      return username.includes(query) || uniqueId.includes(query);
+    })
+  : [];
+
+
 
   if (isLoading) {
     return (
@@ -139,7 +105,7 @@ export default function UserManagement() {
           title="User Management"
           searchText={searchText}
           setSearchText={setSearchText}
-          onProfileClick={() => {}}
+         
         />
         <div className="flex-1 p-4 bg-white flex items-center justify-center">
           <p className="text-gray-600">Loading users...</p>
@@ -149,39 +115,35 @@ export default function UserManagement() {
   }
 
   return (
-    <div className="flex-1 flex flex-col ml-64">
+    <div className="flex-1 flex flex-col ml-64 bg-gray-100 min-h-screen">
       <TopBar
         title="User Management"
         searchText={searchText}
         setSearchText={setSearchText}
-        onProfileClick={() => {}}
+        onProfileClick={() => handleNavigation("Profile")}
       />
       <div className="flex-1 p-4 bg-white flex flex-col items-center">
-        <div className="w-full max-w-4xl flex justify-end mb-4">
-          <button
-            className="bg-green-700 text-white px-4 py-2 rounded flex items-center hover:bg-green-800 transition-colors duration-200"
-            onClick={handleAddUser}
-          >
-            <Plus size={18} className="mr-1" />
-            Add User
-          </button>
-        </div>
-        <div className="w-full max-w-4xl border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-green-100">
-                <th className="py-3 px-4 text-left">ID</th>
-                <th className="py-3 px-4 text-left">Name</th>
-                <th className="py-3 px-4 text-left">Role</th>
-                <th className="py-3 px-4 text-left">Status</th>
-                <th className="py-3 px-4 text-left">Last Login</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="w-full max-w-6xl flex justify-end mb-4">
+                  </div>
+        <div className="bg-white shadow-md rounded-xl overflow-hidden border">
+        <table className="min-w-full text-sm text-gray-700">
+          <thead className="bg-green-100 font-roboto text-gray-700 text-left">
+            <tr>
+              <th className="py-3 px-4">Unique ID</th>
+              <th className="py-3 px-4">Username</th>
+              <th className="py-3 px-4">Email</th>
+              <th className="py-3 px-4">Role</th>
+              <th className="py-3 px-4">Status</th>
+              <th className="py-3 px-4">Last Login</th>
+              <th className="py-3 px-4 text-right">Actions</th>
+              <th className="py-3 px-4"></th>
+
+            </tr>
+          </thead>
+          <tbody>
               {filteredUsers.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-3 px-4 text-center text-gray-600">
+                  <td colSpan={6} className="py-6 px-4 text-center text-gray-500">
                     No users found
                   </td>
                 </tr>
@@ -189,15 +151,17 @@ export default function UserManagement() {
                 filteredUsers.map((user, index) => (
                   <tr
                     key={user._id}
-                    className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-green-50' : 'bg-white'}`}
+                    className={`transition duration-200 hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'}`}
                   >
-                    <td className="py-3 px-4 border-t">{user._id}</td>
+                    <td className="py-3 px-4 border-t">{user.uniqueId}</td>
                     <td className="py-3 px-4 border-t">{user.username}</td>
+                    <td className="py-3 px-4 border-t">{user.email}</td>
                     <td className="py-3 px-4 border-t">{user.role}</td>
+                    <td className="py-3 px-4 border-t">{user.status}</td>
                     <td className="py-3 px-4 border-t">
                       <span
-                        className={`inline-block px-2 py-1 rounded-full text-sm ${
-                          user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                          user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'
                         }`}
                       >
                         {user.status}
@@ -208,13 +172,13 @@ export default function UserManagement() {
                     </td>
                     <td className="py-3 px-4 border-t text-right">
                       <button
-                        className="text-blue-600 hover:text-blue-500 mr-3"
+                        className="text-blue-600 hover:text-blue-800 font-medium mr-3 transition"
                         onClick={() => handleEditUser(user._id)}
                       >
                         Edit
                       </button>
                       <button
-                        className="text-red-600 hover:text-red-500"
+                        className="text-red-600 hover:text-red-800 font-medium transition"
                         onClick={() => handleDeleteUser(user._id)}
                       >
                         Delete
@@ -227,13 +191,7 @@ export default function UserManagement() {
           </table>
         </div>
       </div>
-      <AddUserModal
-        show={showAddDialog}
-        onCloseForm={() => setShowAddDialog(false)}
-        formData={addFormData}
-        onFormChange={handleAddFormChange}
-        onSave={handleAddSave}
-      />
+      
       <EditUserModal
         show={showEditDialog}
         onCloseForm={() => setShowEditDialog(false)}
