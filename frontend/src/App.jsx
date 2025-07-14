@@ -29,7 +29,6 @@ import Layout from './Components/Layout/Layout';
 import Sidebar from './Components/side_bar/Sidebar';
 
 
-
 //ADMIN LAYOUT WRAPPER WITH LOGIC AND OUTLET SUPPORT
 const AdminLayoutWrapper = () => {
   const location = useLocation();
@@ -167,6 +166,10 @@ const UserLayoutWrapper = () => {
 };
 
 function App() {
+  
+  const token = localStorage.getItem('token');
+  const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+  const userId = currentUser?.userId;
   return (
     <Router>
       <Routes>
@@ -194,11 +197,12 @@ function App() {
           <Route path="home" element={<HomePage />} />
           <Route path="report" element={<ReportPage />} />
           <Route path="settings" element={<SettingsPage />} />
-          <Route path="alerts" element={<AlertsPage />} />
+          <Route path="alerts" element={<AlertsPage user={currentUser}/>} />
         </Route>
         
          {/* Catch-all route */}
         <Route path="*" element={<Navigate to="/" replace />} />
+        {/* <Route path="/" element={<Navigate to={token ? 'dashboard' : '/login'} />} /> */}
       </Routes>
     </Router>
   );

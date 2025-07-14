@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import BinImage from "../../../assets/BIN.jpg";
+import { useState, useEffect } from 'react';
+import api from '../../../api/axios';
+import BinImage from '../../../assets/BIN.jpg';
 
 function SettingsPage() {
   const [notifications, setNotifications] = useState({
@@ -18,28 +19,70 @@ function SettingsPage() {
   
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserInfo, setEditedUserInfo] = useState({...userInfo});
-  
+  const [message, setMessage] = useState({ text: '', type: '' });
+
+  useEffect(() => {
+    // Fetch user settings from backend
+    const fetchSettings = async () => {
+      try {
+        const response = await api.get('/settings');
+        const settings = response.data.data;
+        setNotifications(settings.reminders || notifications);
+      } catch (err) {
+        console.error('Error fetching settings:', err);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   const handleNotificationToggle = (key) => {
     setNotifications(prev => ({
       ...prev,
       [key]: !prev[key]
     }));
   };
-  
+
   const handleEditStart = () => {
     setIsEditing(true);
     setEditedUserInfo({...userInfo});
   };
-  
+
   const handleEditCancel = () => {
     setIsEditing(false);
   };
-  
-  const handleEditSave = () => {
-    setUserInfo({...editedUserInfo});
+
+  const handleEditSave = async () => {
+    try {
+      const response = await api.put('/users/' + JSON.parse(localStorage.getItem('user'))._id, {
+        username: editedUserInfo.name,
+        email: editedUserInfo.email,
+        // contactNo is not part of User schema, so it's not saved
+      });
+      if (response.data.success) {
+        setUserInfo({...editedUserInfo});
+        setMessage({ text: 'User info updated successfully!', type: 'success' });
+        setTimeout(() => setMessage({ text: '', type: '' }), 2000);
+      }
+    } catch (err) {
+      setMessage({ text: 'Failed to update user info.', type: 'error' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 2000);
+    }
     setIsEditing(false);
   };
-  
+
+  const handleSaveSettings = async () => {
+    try {
+      const response = await api.put('/settings', { reminders: notifications });
+      if (response.data.success) {
+        setMessage({ text: 'Settings saved successfully!', type: 'success' });
+        setTimeout(() => setMessage({ text: '', type: '' }), 2000);
+      }
+    } catch (err) {
+      setMessage({ text: 'Failed to save settings.', type: 'error' });
+      setTimeout(() => setMessage({ text: '', type: '' }), 2000);
+    }
+  };
+
   const handleEditChange = (e) => {
     const { name, value } = e.target;
     setEditedUserInfo(prev => ({
@@ -47,11 +90,17 @@ function SettingsPage() {
       [name]: value
     }));
   };
-  
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">User Settings</h1>
       
+      {message.text && (
+        <div className={`p-4 mb-4 rounded border ${message.type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'}`}>
+          {message.text}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Notifications Settings */}
         <div className="bg-citybin-light-green p-6 rounded-lg bg-green-200">
@@ -120,7 +169,10 @@ function SettingsPage() {
           </div>
           
           <div className="mt-6">
-            <button className="w-full bg-citybin-green text-black rounded-md py-3 font-medium">
+            <button 
+              onClick={handleSaveSettings}
+              className="w-full bg-citybin-green text-white rounded-md py-3 font-medium"
+            >
               Save Changes
             </button>
           </div>
@@ -132,8 +184,7 @@ function SettingsPage() {
           
           <div className="flex justify-center mb-4">
             <div className="h-16 w-16 rounded-full bg-green-200 flex items-center justify-center">
-              {/* User avatar placeholder */}
-              <svg className="h-11 w-11 text-gray-600 bg-green-400 rounded-2xl"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg className="h-11 w-11 text-gray-600 bg-green-400 rounded-2xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
@@ -221,8 +272,7 @@ function SettingsPage() {
         </div>
       </div>
       
-      {/* Bin image - hidden on small screens */}
-      <div className="hidden md:block fixed left-70 bottom-6 w-1/8 max-w-xs">
+      <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
         <img 
           src={BinImage} 
           alt="Recycle bin" 

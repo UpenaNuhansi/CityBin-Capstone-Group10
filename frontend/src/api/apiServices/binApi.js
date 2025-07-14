@@ -1,4 +1,4 @@
-import api from "../axios"
+import api from "../axios";
 
 // Fetch all bins
 export const getAllBins = async () => {
@@ -16,8 +16,12 @@ export const createBin = (payload) => {
 export const updateBin = (binId, updatedData) => api.put(`/bins/${binId}`, updatedData);
 
 // Assign maintenance
-export const assignMaintenance = (binId, userId) => api.post(`/bins/${binId}/maintenance`, { userId });
+export const assignMaintenance = (binId, operatorId) =>
+  api.post(`/bins/${binId}/maintenance`, { operatorId });
+
+// Update bin status and auto-unassign operator if status = "OK"
+export const updateBinStatus = (binId, status) => 
+  api.put(`/bins/${binId}/status`, { status });
 
 // Delete a bin
 export const deleteBin = (binId) => api.delete(`/bins/${binId}`);
-
