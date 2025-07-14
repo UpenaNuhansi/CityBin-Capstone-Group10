@@ -151,107 +151,10 @@ const saveFeatures = async () => {
       />
 
       <div className="flex-1 p-4 bg-white">
-        <h2 className="text-lg font-medium mb-2">Configure threshold, alert and device settings</h2>
+        <h2 className="text-lg font-medium mb-2">Configure alert and device settings</h2>
 
         <div className="grid grid-cols-2 gap-4">
-          {/* Waste Level Thresholds */}
-          <div className="border rounded-lg p-4 bg-gray-50 relative" style={{ minHeight: "350px" }}>
-            <h3 className="font-medium mb-3">Waste Level Thresholds</h3>
-
-            <div className="mb-4">
-              <select
-                className="w-full p-2 border rounded-md bg-white"
-                value={wasteType}
-                onChange={(e) => setWasteType(e.target.value)}
-              >
-                <option value="Organic">Organic</option>
-                <option value="Recyclable">Recyclable</option>
-                <option value="General">General</option>
-                <option value="Hazardous">Hazardous</option>
-              </select>
-            </div>
-
-            <div className="mb-4">
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Current threshold: {threshold}%</span>
-              </div>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={threshold}
-                onChange={handleThresholdChange}
-                className="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer"
-              />
-            </div>
-
-            <div className="mb-6">
-              <div className="absolute bottom-4 left-4 right-4">
-                <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-colors duration-200"
-                  onClick={saveThreshold}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Automated Reminders */}
-          <div className="border rounded-lg p-4 bg-gray-50 relative" style={{ minHeight: "350px" }}>
-            <h3 className="font-medium mb-3">Automated Reminders</h3>
-
-            <div className="mb-4">
-              <div className="flex justify-between items-center mb-2">
-                <span>Frequency</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={remindersEnabled}
-                    onChange={() => setRemindersEnabled(!remindersEnabled)}
-                    className="sr-only peer"
-                  />
-                  <div className="w-10 h-5 bg-gray-200 rounded-full peer">
-                    <div
-                      className={`w-5 h-5 rounded-full shadow-md transform transition-transform duration-300 ease-in-out ${
-                        remindersEnabled ? "translate-x-5 bg-green-500" : "translate-x-0 bg-red-500"
-                      }`}
-                    ></div>
-                  </div>
-                </label>
-              </div>
-
-              <div className="mb-4">
-                <span className="block text-sm mb-1">Time</span>
-                <input
-                  type="time"
-                  value={reminderTime}
-                  onChange={(e) => setReminderTime(e.target.value)}
-                  className="w-full p-2 border rounded-md"
-                  disabled={!remindersEnabled}
-                />
-              </div>
-
-              <div className="space-y-2 mb-4">
-                <Checkbox label="Email" checked={emailEnabled} onChange={() => setEmailEnabled(!emailEnabled)} disabled={!remindersEnabled} />
-                <Checkbox label="SMS" checked={smsEnabled} onChange={() => setSmsEnabled(!smsEnabled)} disabled={!remindersEnabled} />
-                <Checkbox label="App Notification" checked={appNotificationEnabled} onChange={() => setAppNotificationEnabled(!appNotificationEnabled)} disabled={!remindersEnabled} />
-              </div>
-            </div>
-
-            <div className="mb-6">
-              <div className="absolute bottom-4 left-4 right-4">
-                <button
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded transition-colors duration-200"
-                  onClick={saveReminders}
-                >
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* IoT Device Connectivity */}
+                  {/* IoT Device Connectivity */}
           <div className="border rounded-lg p-4 bg-gray-50 relative" style={{ minHeight: "350px" }}>
             <h3 className="font-medium mb-3">IoT Device Connectivity</h3>
 
@@ -303,11 +206,11 @@ const saveFeatures = async () => {
             <h3 className="font-medium mb-3">Enable/Disable Features</h3>
 
             <div className="space-y-4 mb-4">
-              <Toggle
+              {/* <Toggle
                 label="Enable overflow alerts"
                 checked={overflowAlertsEnabled}
                 onChange={() => setOverflowAlertsEnabled(!overflowAlertsEnabled)}
-              />
+              /> */}
               <Toggle
                 label="Enable smart route optimization"
                 checked={smartRouteEnabled}
