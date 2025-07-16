@@ -35,8 +35,14 @@ export default function LoginForm() {
       const response = await api.post('/auth/login', { email, password });
 
       if (response.data.success) {
+        // Normalize user object to always have id and role
+        let user = response.data.user;
+        if (user && !user.id && user._id) {
+          user.id = user._id;
+        }
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('user', JSON.stringify(user));
+        console.log('Login: user saved to localStorage:', user);
 
         setMessage({
           type: 'success',

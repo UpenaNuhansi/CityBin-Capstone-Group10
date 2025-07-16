@@ -10,24 +10,22 @@ function SettingsPage() {
     rewardsAchievements: true,
     systemUpdates: true
   });
-  
+
   const [userInfo, setUserInfo] = useState({
     name: 'N. Rubasinghe',
     email: 'nai@gmail.com',
     contactNo: '+94 716695238'
   });
-  
+
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUserInfo, setEditedUserInfo] = useState({...userInfo});
+  const [editedUserInfo, setEditedUserInfo] = useState({ ...userInfo });
   const [message, setMessage] = useState({ text: '', type: '' });
 
   useEffect(() => {
-    // Fetch user settings from backend
     const fetchSettings = async () => {
       try {
         const response = await api.get('/settings');
-        const settings = response.data.data;
-        setNotifications(settings.reminders || notifications);
+        setNotifications(response.data.data.reminders || notifications);
       } catch (err) {
         console.error('Error fetching settings:', err);
       }
@@ -36,15 +34,15 @@ function SettingsPage() {
   }, []);
 
   const handleNotificationToggle = (key) => {
-    setNotifications(prev => ({
+    setNotifications((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
   };
 
   const handleEditStart = () => {
     setIsEditing(true);
-    setEditedUserInfo({...userInfo});
+    setEditedUserInfo({ ...userInfo });
   };
 
   const handleEditCancel = () => {
@@ -56,17 +54,15 @@ function SettingsPage() {
       const response = await api.put('/users/' + JSON.parse(localStorage.getItem('user'))._id, {
         username: editedUserInfo.name,
         email: editedUserInfo.email,
-        // contactNo is not part of User schema, so it's not saved
       });
       if (response.data.success) {
-        setUserInfo({...editedUserInfo});
+        setUserInfo({ ...editedUserInfo });
         setMessage({ text: 'User info updated successfully!', type: 'success' });
-        setTimeout(() => setMessage({ text: '', type: '' }), 2000);
       }
-    } catch (err) {
+    } catch {
       setMessage({ text: 'Failed to update user info.', type: 'error' });
-      setTimeout(() => setMessage({ text: '', type: '' }), 2000);
     }
+    setTimeout(() => setMessage({ text: '', type: '' }), 2500);
     setIsEditing(false);
   };
 
@@ -75,209 +71,148 @@ function SettingsPage() {
       const response = await api.put('/settings', { reminders: notifications });
       if (response.data.success) {
         setMessage({ text: 'Settings saved successfully!', type: 'success' });
-        setTimeout(() => setMessage({ text: '', type: '' }), 2000);
       }
-    } catch (err) {
+    } catch {
       setMessage({ text: 'Failed to save settings.', type: 'error' });
-      setTimeout(() => setMessage({ text: '', type: '' }), 2000);
     }
+    setTimeout(() => setMessage({ text: '', type: '' }), 2500);
   };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditedUserInfo(prev => ({
+    setEditedUserInfo((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">User Settings</h1>
-      
+    <div className="ml-64 mt-10 relative p-6 min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-sans">
+      <h1 className="text-3xl font-bold text-green-900 mb-6">User Settings</h1>
+
       {message.text && (
-        <div className={`p-4 mb-4 rounded border ${message.type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'}`}>
+        <div
+          className={`p-4 mb-6 rounded-md shadow-md transition-all duration-300 border ${
+            message.type === 'success'
+              ? 'bg-green-100 text-green-800 border-green-300'
+              : 'bg-red-100 text-red-800 border-red-300'
+          }`}
+        >
           {message.text}
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Notifications Settings */}
-        <div className="bg-citybin-light-green p-6 rounded-lg bg-green-200">
-          <h2 className="text-xl font-semibold mb-4">Notifications</h2>
-          
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 relative z-10">
+        {/* Notifications */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="text-xl font-semibold text-green-800 mb-4">Notification Preferences</h2>
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span>Bin Status Alerts</span>
-              <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.binStatus ? 'bg-citybin-green' : 'bg-gray-300'}`}
-                onClick={() => handleNotificationToggle('binStatus')}
-              >
-                <span 
-                  className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${notifications.binStatus ? 'translate-x-6' : 'translate-x-1'}`} 
-                />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span>Collection Reminders</span>
-              <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.collectionReminders ? 'bg-citybin-green' : 'bg-gray-300'}`}
-                onClick={() => handleNotificationToggle('collectionReminders')}
-              >
-                <span 
-                  className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${notifications.collectionReminders ? 'translate-x-6' : 'translate-x-1'}`} 
-                />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span>Maintenance Alerts</span>
-              <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.maintenanceAlerts ? 'bg-citybin-green' : 'bg-gray-300'}`}
-                onClick={() => handleNotificationToggle('maintenanceAlerts')}
-              >
-                <span 
-                  className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${notifications.maintenanceAlerts ? 'translate-x-6' : 'translate-x-1'}`} 
-                />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span>Rewards & Achievements</span>
-              <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.rewardsAchievements ? 'bg-citybin-green' : 'bg-gray-300'}`}
-                onClick={() => handleNotificationToggle('rewardsAchievements')}
-              >
-                <span 
-                  className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${notifications.rewardsAchievements ? 'translate-x-6' : 'translate-x-1'}`} 
-                />
-              </button>
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <span>System Updates/General Info</span>
-              <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.systemUpdates ? 'bg-citybin-green' : 'bg-gray-300'}`}
-                onClick={() => handleNotificationToggle('systemUpdates')}
-              >
-                <span 
-                  className={`inline-block w-4 h-4 transform transition-transform bg-white rounded-full ${notifications.systemUpdates ? 'translate-x-6' : 'translate-x-1'}`} 
-                />
-              </button>
-            </div>
+            {[
+              ['binStatus', 'Bin Status Alerts'],
+              ['collectionReminders', 'Collection Reminders'],
+              ['maintenanceAlerts', 'Maintenance Alerts'],
+              ['rewardsAchievements', 'Rewards & Achievements'],
+              ['systemUpdates', 'System Updates / General Info'],
+            ].map(([key, label]) => (
+              <div className="flex justify-between items-center" key={key}>
+                <span className="text-gray-700">{label}</span>
+                <button
+                  onClick={() => handleNotificationToggle(key)}
+                  className={`relative inline-flex h-6 w-11 rounded-full transition-colors duration-200 ${
+                    notifications[key] ? 'bg-green-500' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block w-5 h-5 transform rounded-full bg-white shadow transition-transform duration-200 ${
+                      notifications[key] ? 'translate-x-5' : 'translate-x-0.5'
+                    }`}
+                  />
+                </button>
+              </div>
+            ))}
           </div>
-          
-          <div className="mt-6">
-            <button 
-              onClick={handleSaveSettings}
-              className="w-full bg-citybin-green text-white rounded-md py-3 font-medium"
-            >
-              Save Changes
-            </button>
-          </div>
+          <button
+            onClick={handleSaveSettings}
+            className="w-full mt-6 py-2 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md transition"
+          >
+            Save Notification Settings
+          </button>
         </div>
-        
-        {/* User Information */}
-        <div className="bg-citybin-light-green p-6 rounded-lg bg-green-200">
-          <h2 className="text-xl font-semibold mb-4">User Info</h2>
-          
+
+        {/* User Info */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="text-xl font-semibold text-green-800 mb-4">User Information</h2>
+
           <div className="flex justify-center mb-4">
-            <div className="h-16 w-16 rounded-full bg-green-200 flex items-center justify-center">
-              <svg className="h-11 w-11 text-gray-600 bg-green-400 rounded-2xl" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="w-20 h-20 bg-green-200 rounded-full flex items-center justify-center shadow-md">
+              <svg
+                className="w-10 h-10 text-green-800"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
           </div>
-          
+
           {isEditing ? (
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={editedUserInfo.name}
-                  onChange={handleEditChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={editedUserInfo.email}
-                  onChange={handleEditChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contact No</label>
-                <input
-                  type="tel"
-                  name="contactNo"
-                  value={editedUserInfo.contactNo}
-                  onChange={handleEditChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
-              
+              {['name', 'email', 'contactNo'].map((field) => (
+                <div key={field}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 capitalize">{field}</label>
+                  <input
+                    type={field === 'email' ? 'email' : 'text'}
+                    name={field}
+                    value={editedUserInfo[field]}
+                    onChange={handleEditChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500 focus:outline-none"
+                  />
+                </div>
+              ))}
               <div className="flex space-x-2">
-                <button 
+                <button
                   onClick={handleEditSave}
-                  className="flex-1 bg-citybin-green text-white bg-green-500 rounded-md py-2"
+                  className="flex-1 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
                 >
                   Save
                 </button>
-                <button 
+                <button
                   onClick={handleEditCancel}
-                  className="flex-1 bg-gray-300 text-gray-600 rounded-md py-2"
+                  className="flex-1 py-2 bg-gray-300 text-gray-700 rounded-md"
                 >
                   Cancel
                 </button>
               </div>
             </div>
           ) : (
-            <div>
-              <div className="space-y-3">
-                <div className="flex">
-                  <span className="font-medium w-24">Name</span>
-                  <span className="flex-1">: {userInfo.name}</span>
-                </div>
-                
-                <div className="flex">
-                  <span className="font-medium w-24">E-mail</span>
-                  <span className="flex-1">: {userInfo.email}</span>
-                </div>
-                
-                <div className="flex">
-                  <span className="font-medium w-24">Contact No</span>
-                  <span className="flex-1">: {userInfo.contactNo}</span>
-                </div>
+            <div className="space-y-2 text-gray-700">
+              <div className="flex justify-between">
+                <span className="font-medium">Name:</span>
+                <span>{userInfo.name}</span>
               </div>
-              
-              <div className="mt-6">
-                <button 
-                  onClick={handleEditStart}
-                  className="w-full bg-green-500 text-white rounded-md py-3 font-medium"
-                >
-                  Edit
-                </button>
+              <div className="flex justify-between">
+                <span className="font-medium">Email:</span>
+                <span>{userInfo.email}</span>
               </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Contact:</span>
+                <span>{userInfo.contactNo}</span>
+              </div>
+              <button
+                onClick={handleEditStart}
+                className="w-full mt-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Edit Info
+              </button>
             </div>
           )}
         </div>
       </div>
-      
-      <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
-        <img 
-          src={BinImage} 
-          alt="Recycle bin" 
-          className="w-full"
-        />
+
+      {/* Bin Image Background */}
+      <div className="hidden md:block fixed right-0 bottom-0 w-64 opacity-20 z-0 pointer-events-none">
+        <img src={BinImage} alt="Bin" className="w-full h-auto" />
       </div>
     </div>
   );

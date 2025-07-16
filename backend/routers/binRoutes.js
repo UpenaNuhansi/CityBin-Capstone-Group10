@@ -15,6 +15,11 @@ const {
 const auth = require('../middlewares/auth');
 const adminOnly = require('../middlewares/adminOnly');
 
+// GET /api/bins/stats (accessible to both Admin and Operator)
+router.get('/stats', auth, getBinStats);
+// GET /api/bins/assigned-to-operator (accessible to both Admin and Operator)
+router.get('/assigned-to-operator', auth, getBinsAssignedToOperator);
+
 // Admin-protected routes
 router.get('/', auth, adminOnly, getAllBins);
 router.post('/', auth, adminOnly, createBin);
@@ -28,12 +33,8 @@ router.post('/:binId/maintenance', auth, adminOnly, assignMaintenance);
 // Update bin status (e.g., to OK)
 router.put('/:binId/status', auth, updateBinStatus);
 
-router.get('/bins/assigned-to-operator', auth, getBinsAssignedToOperator);
-
 // Operator/user-specific route
 router.get('/user-status', auth, getUserBinStatus);
 
-// GET /api/bins/stats
-router.get('/stats', getBinStats);
 
 module.exports = router;

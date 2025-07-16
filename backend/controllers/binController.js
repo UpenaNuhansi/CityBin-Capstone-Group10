@@ -5,8 +5,30 @@ const Notification = require('../models/Notification');
 // Get all bins (Admin only)
 const getAllBins = async (req, res) => {
   try {
-    const bins = await Bin.find().populate('assignedOperator', 'username uniqueId');
-    res.status(200).json({ status: 'success', data: bins });
+    const bins = await Bin.find().populate('assignedOperator', 'username uniqueId email');
+    // Standardize bin object fields
+    const formattedBins = bins.map(bin => ({
+      id: bin.binId,
+      binId: bin.binId,
+      location: bin.location,
+      wasteLevel: Number(bin.wasteLevel),
+      maintenance: bin.maintenance,
+      coordinates: {
+        lat: Number(bin.coordinates?.lat),
+        lng: Number(bin.coordinates?.lng)
+      },
+      deviceStatus: bin.deviceStatus,
+      lastUpdate: bin.lastUpdate || 'Just now',
+      assignedOperator: bin.assignedOperator ? {
+        _id: bin.assignedOperator._id,
+        username: bin.assignedOperator.username,
+        uniqueId: bin.assignedOperator.uniqueId,
+        email: bin.assignedOperator.email || null
+      } : null,
+      status: bin.status || 'OK',
+      _id: bin._id
+    }));
+    res.status(200).json({ status: 'success', data: formattedBins });
   } catch (err) {
     res.status(500).json({ status: 'error', message: 'Failed to fetch bins' });
   }
@@ -30,7 +52,25 @@ const createBin = async (req, res) => {
       lastUpdate: 'Just now',
     });
 
-    res.status(201).json({ status: 'success', data: newBin });
+    // Standardize response
+    const formattedBin = {
+      id: newBin.binId,
+      binId: newBin.binId,
+      location: newBin.location,
+      wasteLevel: Number(newBin.wasteLevel),
+      maintenance: newBin.maintenance,
+      coordinates: {
+        lat: Number(newBin.coordinates?.lat),
+        lng: Number(newBin.coordinates?.lng)
+      },
+      deviceStatus: newBin.deviceStatus,
+      lastUpdate: newBin.lastUpdate || 'Just now',
+      assignedOperator: null,
+      status: newBin.status || 'OK',
+      _id: newBin._id
+    };
+    console.log('Formatted bin response:', formattedBin);
+    res.status(201).json({ status: 'success', data: formattedBin });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
   }
@@ -52,13 +92,36 @@ const updateBin = async (req, res) => {
       { binId: req.params.binId },
       { binId, location, wasteLevel, maintenance, coordinates, deviceStatus, lastUpdate: 'Just now' },
       { new: true, runValidators: true }
-    );
+    ).populate('assignedOperator', 'username uniqueId email');
 
     if (!bin) {
       return res.status(404).json({ status: 'fail', message: 'Bin not found' });
     }
 
-    res.status(200).json({ status: 'success', data: bin });
+    // Standardize response
+    const formattedBin = {
+      id: bin.binId,
+      binId: bin.binId,
+      location: bin.location,
+      wasteLevel: Number(bin.wasteLevel),
+      maintenance: bin.maintenance,
+      coordinates: {
+        lat: Number(bin.coordinates?.lat),
+        lng: Number(bin.coordinates?.lng)
+      },
+      deviceStatus: bin.deviceStatus,
+      lastUpdate: bin.lastUpdate || 'Just now',
+      assignedOperator: bin.assignedOperator ? {
+        _id: bin.assignedOperator._id,
+        username: bin.assignedOperator.username,
+        uniqueId: bin.assignedOperator.uniqueId,
+        email: bin.assignedOperator.email || null
+      } : null,
+      status: bin.status || 'OK',
+      _id: bin._id
+    };
+
+    res.status(200).json({ status: 'success', data: formattedBin });
   } catch (err) {
     res.status(400).json({ status: 'fail', message: err.message });
   }
@@ -93,7 +156,30 @@ const assignMaintenance = async (req, res) => {
       binId: bin.binId,
     });
 
-    res.status(200).json({ success: true, data: bin });
+    // Standardize response
+    const formattedBin = {
+      id: bin.binId,
+      binId: bin.binId,
+      location: bin.location,
+      wasteLevel: Number(bin.wasteLevel),
+      maintenance: bin.maintenance,
+      coordinates: {
+        lat: Number(bin.coordinates?.lat),
+        lng: Number(bin.coordinates?.lng)
+      },
+      deviceStatus: bin.deviceStatus,
+      lastUpdate: bin.lastUpdate || 'Just now',
+      assignedOperator: bin.assignedOperator ? {
+        _id: bin.assignedOperator._id,
+        username: bin.assignedOperator.username,
+        uniqueId: bin.assignedOperator.uniqueId,
+        email: bin.assignedOperator.email || null
+      } : null,
+      status: bin.status || 'OK',
+      _id: bin._id
+    };
+
+    res.status(200).json({ success: true, data: formattedBin });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Failed to assign maintenance', error: err.message });
   }
@@ -137,7 +223,7 @@ const updateBinStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
-    const bin = await Bin.findOne({ binId });
+    let bin = await Bin.findOne({ binId }).populate('assignedOperator', 'username uniqueId email');
 
     if (!bin) return res.status(404).json({ message: 'Bin not found' });
 
@@ -145,7 +231,7 @@ const updateBinStatus = async (req, res) => {
 
     // If maintenance marked OK, unassign operator and notify
     if (status === 'OK' && bin.assignedOperator) {
-      const operatorId = bin.assignedOperator;
+      const operatorId = bin.assignedOperator._id;
 
       await Notification.create({
         userId: operatorId,
@@ -160,48 +246,231 @@ const updateBinStatus = async (req, res) => {
     }
 
     await bin.save();
+    await bin.populate('assignedOperator', 'username uniqueId email');
 
-    res.status(200).json({ success: true, bin });
+    // Standardize response
+    const formattedBin = {
+      id: bin.binId,
+      binId: bin.binId,
+      location: bin.location,
+      wasteLevel: Number(bin.wasteLevel),
+      maintenance: bin.maintenance,
+      coordinates: {
+        lat: Number(bin.coordinates?.lat),
+        lng: Number(bin.coordinates?.lng)
+      },
+      deviceStatus: bin.deviceStatus,
+      lastUpdate: bin.lastUpdate || 'Just now',
+      assignedOperator: bin.assignedOperator ? {
+        _id: bin.assignedOperator._id,
+        username: bin.assignedOperator.username,
+        uniqueId: bin.assignedOperator.uniqueId,
+        email: bin.assignedOperator.email || null
+      } : null,
+      status: bin.status || 'OK',
+      _id: bin._id
+    };
+
+    res.status(200).json({ success: true, data: formattedBin });
   } catch (err) {
     res.status(500).json({ message: 'Failed to update bin', error: err.message });
   }
 };
 
 // Get bins assigned to the currently logged-in operator
+// const getBinsAssignedToOperator = async (req, res) => {
+//   try {
+//     const userRole = req.user.role;
+
+//     if (userRole === 'Operator') {
+//       const operatorId = req.user.id;
+//       const bins = await Bin.find({ assignedOperator: operatorId });
+//       return res.status(200).json({ data: bins });
+//     }
+
+//     if (userRole === 'Admin') {
+//       const bins = await Bin.find({ assignedOperator: { $ne: null } });
+//       return res.status(200).json({ data: bins });
+//     }
+
+//     return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
+//   } catch (error) {
+//     console.error('Error getting bins for operator:', error);
+//     res.status(500).json({ message: 'Failed to fetch assigned bins' });
+//   }
+// };
+
+// const getBinsAssignedToOperator = async (req, res) => {
+//   try {
+//     const userRole = req.user.role;
+//     const operatorId = req.user.id;
+
+//     let bins;
+//     if (userRole === 'Operator') {
+//       bins = await Bin.find({ assignedOperator: operatorId }).populate('assignedOperator', 'username uniqueId email');
+//       return res.status(200).json({ data: bins });
+//     }
+
+//     if (userRole === 'Admin') {
+//       bins = await Bin.find({ assignedOperator: { $ne: null } }).populate('assignedOperator', 'username uniqueId email');
+//       return res.status(200).json({ data: bins });
+//     }
+
+//     return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
+//   } catch (error) {
+//     console.error('Error getting bins for operator:', error);
+//     res.status(500).json({ message: 'Failed to fetch assigned bins' });
+//   }
+// };
+
+
 const getBinsAssignedToOperator = async (req, res) => {
   try {
     const userRole = req.user.role;
+    const operatorId = req.user.id;
 
+    console.log('getBinsAssignedToOperator called for user:', req.user); // Debug log
+    let bins;
     if (userRole === 'Operator') {
-      const operatorId = req.user.id;
-      const bins = await Bin.find({ assignedOperator: operatorId });
-      return res.status(200).json({ data: bins });
+      bins = await Bin.find({ assignedOperator: operatorId }).populate('assignedOperator', 'username uniqueId email');
+    } else if (userRole === 'Admin') {
+      bins = await Bin.find({ assignedOperator: { $ne: null } }).populate('assignedOperator', 'username uniqueId email');
+    } else {
+      console.error('Access denied: Invalid role', userRole);
+      return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
     }
 
-    if (userRole === 'Admin') {
-      const bins = await Bin.find({ assignedOperator: { $ne: null } });
-      return res.status(200).json({ data: bins });
-    }
-
-    return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
+    console.log('Assigned bins:', bins.length); // Debug log
+    // Standardize bin object fields
+    const formattedBins = bins.map(bin => ({
+      id: bin.binId,
+      binId: bin.binId,
+      location: bin.location,
+      wasteLevel: Number(bin.wasteLevel),
+      maintenance: bin.maintenance,
+      coordinates: {
+        lat: Number(bin.coordinates?.lat),
+        lng: Number(bin.coordinates?.lng)
+      },
+      deviceStatus: bin.deviceStatus,
+      lastUpdate: bin.lastUpdate || 'Just now',
+      assignedOperator: bin.assignedOperator ? {
+        _id: bin.assignedOperator._id,
+        username: bin.assignedOperator.username,
+        uniqueId: bin.assignedOperator.uniqueId,
+        email: bin.assignedOperator.email || null
+      } : null,
+      status: bin.status || 'OK',
+      _id: bin._id
+    }));
+    res.status(200).json({ data: formattedBins });
   } catch (error) {
-    console.error('Error getting bins for operator:', error);
+    console.error('Error getting bins for operator:', error.message, error.stack);
     res.status(500).json({ message: 'Failed to fetch assigned bins' });
   }
 };
 
+
+
+
 // New: Get Bin Statistics
+// const getBinStats = async (req, res) => {
+//   try {
+//     const total = await Bin.countDocuments();
+//     const active = await Bin.countDocuments({ status: 'OK' });
+//     const full = await Bin.countDocuments({ status: 'Full' });
+//     const maintenance = await Bin.countDocuments({ status: 'Maintenance Required' });
+
+//     res.status(200).json({ total, active, full, maintenance });
+//   } catch (error) {
+//     console.error('Error fetching bin stats:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
+// const getBinStats = async (req, res) => {
+//   try {
+//     const bins = await Bin.find(); // No filtering — show all to both roles
+
+//     const total = bins.length;
+//     const active = bins.filter(bin => bin.deviceStatus === 'online').length;
+//     const full = bins.filter(bin => bin.wasteLevel >= 90).length;
+//     const maintenance = bins.filter(bin => bin.maintenance === 'Required').length;
+
+//     res.status(200).json({
+//       total,
+//       active,
+//       full,
+//       maintenance
+//     });
+//     // New: Allow both Admin and Operator
+// // if (req.user.role !== 'Admin' && req.user.role !== 'Operator') {
+// //   return res.status(403).json({ message: 'Access denied.' });
+// // }
+
+//   } catch (error) {
+//     console.error('Error fetching bin stats:', error);
+//     res.status(500).json({ message: 'Internal server error' });
+//   }
+// };
+
+// const getBinStats = async (req, res) => {
+//   try {
+//     const total = await Bin.countDocuments();
+//     const active = await Bin.countDocuments({ status: 'OK' });
+//     const full = await Bin.countDocuments({ status: 'Full' });
+//     const maintenance = await Bin.countDocuments({ status: 'Maintenance' });
+
+//     res.status(200).json({
+//       total,
+//       active,
+//       full,
+//       maintenance,
+//     });
+//   } catch (error) {
+//     console.error('Failed to get bin stats:', error.message);
+//     res.status(500).json({ message: 'Error fetching bin statistics' });
+//   }
+// };
+
+
+// const getBinStats = async (req, res) => {
+//   try {
+//     const user = req.user; // Populated by auth middleware
+//     let query = {};
+
+//     // If Operator, optionally filter by assigned bins 
+//     // if (user.role === 'Operator') {
+//     //   query.assignedOperator = user.id;
+//     // }
+
+//     const total = await Bin.countDocuments(query);
+//     const active = await Bin.countDocuments({ ...query, deviceStatus: 'online' });
+//     const full = await Bin.countDocuments({ ...query, wasteLevel: { $gte: 90 } });
+//     const maintenance = await Bin.countDocuments({ ...query, maintenance: 'Required' });
+
+//     res.status(200).json({
+//       total,
+//       active,
+//       full,
+//       maintenance,
+//     });
+//   } catch (error) {
+//     console.error('Failed to get bin stats:', error.message);
+//     res.status(500).json({ message: 'Error fetching bin statistics' });
+//   }
+// };
+
+
 const getBinStats = async (req, res) => {
   try {
     const total = await Bin.countDocuments();
-    const active = await Bin.countDocuments({ status: 'OK' });
-    const full = await Bin.countDocuments({ status: 'Full' });
-    const maintenance = await Bin.countDocuments({ status: 'Maintenance Required' });
-
+    const active = await Bin.countDocuments({ deviceStatus: 'online' });
+    const full = await Bin.countDocuments({ wasteLevel: { $gte: 90 } });
+    const maintenance = await Bin.countDocuments({ maintenance: 'Required' });
     res.status(200).json({ total, active, full, maintenance });
   } catch (error) {
-    console.error('Error fetching bin stats:', error);
-    res.status(500).json({ message: 'Internal server error' });
+    res.status(200).json({ total: 0, active: 0, full: 0, maintenance: 0, error: 'Failed to fetch bin statistics' });
   }
 };
 

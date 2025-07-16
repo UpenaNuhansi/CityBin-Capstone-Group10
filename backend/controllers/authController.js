@@ -22,6 +22,7 @@ exports.register = async (req, res) => {
       message: 'User registered successfully',
       user: {
         _id: newUser._id,
+        id: newUser._id.toString(),
         username: newUser.username,
         email: newUser.email,
         role: newUser.role,
@@ -66,6 +67,7 @@ exports.login = async (req, res) => {
       token,
       user: {
         _id: user._id,
+        id: user._id.toString(),
         email: user.email,
         username: user.username,
         role: user.role,
