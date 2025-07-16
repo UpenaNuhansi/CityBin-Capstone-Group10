@@ -28,29 +28,27 @@ export default function AlertsNotifications({ handleNavigation }) {
   const [notificationTarget, setNotificationTarget] = useState('AllUsers');
   const [specificIds, setSpecificIds] = useState('');
   const [notificationMessage, setNotificationMessage] = useState('');
-  const [notificationStatus, setNotificationStatus] = useState(''); // or false, null, etc. depending on use
+  const [notificationStatus, setNotificationStatus] = useState('');
 
-
-useEffect(() => {
-  const fetchNotifications = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const res = await api.get(`/notifications/user/${user._id}`);
-      const formatted = res.data.data.map(notif => ({
-        id: notif._id,
-        time: new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: notif.type === 'AdminNotification' ? 'Maintenance' : notif.type,
-        message: notif.message,
-        read: notif.status === 'Read'
-      }));
-      setNotifications(formatted);
-    } catch (err) {
-      console.error('Error fetching notifications:', err);
-    }
-  };
-  fetchNotifications();
-}, []);
-
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const user = JSON.parse(localStorage.getItem('user'));
+        const res = await api.get(`/notifications/user/${user._id}`);
+        const formatted = res.data.data.map(notif => ({
+          id: notif._id,
+          time: new Date(notif.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: notif.type === 'AdminNotification' ? 'Maintenance' : notif.type,
+          message: notif.message,
+          read: notif.status === 'Read'
+        }));
+        setNotifications(formatted);
+      } catch (err) {
+        console.error('Error fetching notifications:', err);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -113,52 +111,44 @@ useEffect(() => {
     : [];
 
   const handleSendBulkNotification = async () => {
-  if (!notificationMessage.trim()) {
-    showNotification('Please enter a message before sending.', 'error');
-    return;
-  }
+    if (!notificationMessage.trim()) {
+      showNotification('Please enter a message before sending.', 'error');
+      return;
+    }
 
-  const payload = {
-    message: notificationMessage,
-    target: notificationTarget,
-    specificIds: [],
+    const payload = {
+      message: notificationMessage,
+      target: notificationTarget,
+      specificIds: notificationTarget.includes('Specific')
+        ? specificIds.split(',').map(id => id.trim()).filter(Boolean)
+        : []
+    };
+
+    try {
+      await api.post('/notifications/bulk', payload);
+      showNotification('Notification sent successfully!', 'success');
+      setNotificationMessage('');
+      setSpecificIds('');
+    } catch (error) {
+      console.error('Failed to send bulk notification:', error);
+      showNotification('Failed to send notification.', 'error');
+    }
   };
 
-  if (notificationTarget === "SpecificUsers") {
-    payload.specificIds = specificIds
-      .split(',')
-      .map(id => id.trim())
-      .filter(id => id.length > 0);
-  }
-
-  try {
-    await api.post('/notifications/bulk', payload);
-    showNotification('Notification sent successfully!', 'success');
-    setNotificationMessage('');
-    setSpecificIds('');
-  } catch (error) {
-    console.error('Failed to send bulk notification:', error);
-    showNotification('Failed to send notification.', 'error');
-  }
-};
-
-
-const markAsReviewed = async (reportId) => {
-  try {
-    await api.put(`/reports/${reportId}/review`); // or `/reviewed` if you match route
-    setReports(prevReports =>
-      prevReports.map(r => r._id === reportId ? { ...r, reviewed: true } : r)
-    );
-    showNotification('Report marked as reviewed', 'success');
-  } catch (error) {
-    showNotification('Failed to update report', 'error');
-  }
-};
-
-
+  const markAsReviewed = async (reportId) => {
+    try {
+      await api.put(`/reports/${reportId}/review`);
+      setReports(prev =>
+        prev.map(r => r._id === reportId ? { ...r, reviewed: true } : r)
+      );
+      showNotification('Report marked as reviewed', 'success');
+    } catch (error) {
+      showNotification('Failed to update report', 'error');
+    }
+  };
 
   return (
-    <div className="flex-1 flex flex-col ml-64">
+    <div className="flex-1 flex flex-col ml-64 bg-gray-50 min-h-screen">
       <TopBar
         title="Alerts & Notifications"
         searchText={searchText}
@@ -166,7 +156,7 @@ const markAsReviewed = async (reportId) => {
         onProfileClick={() => handleNavigation('Profile')}
       />
 
-      <div className="flex-1 p-6 bg-white">
+      <div className="flex-1 p-6">
         {notification.show && (
           <div className={`p-4 mb-4 rounded border ${notification.type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200'}`}>
             {notification.message}
@@ -184,32 +174,30 @@ const markAsReviewed = async (reportId) => {
             className={`py-2 px-6 font-medium ${activeTab === 'reports' ? 'text-green-700 border-b-2 border-green-700' : 'text-gray-600 hover:text-green-700'}`}
             onClick={() => setActiveTab('reports')}
           >
-            User Reports
+            User Reports & Notifications
           </button>
         </div>
 
+        {/* Recent Notifications Tab */}
         {activeTab === 'recent' && (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">Recent Notifications</h2>
+              <h2 className="text-xl font-bold text-gray-800">Recent Notifications</h2>
               {notifications.length > 0 && (
-                <button
-                  className="text-red-600 hover:text-red-800"
-                  onClick={clearAllNotifications}
-                >
+                <button className="text-red-600 hover:underline" onClick={clearAllNotifications}>
                   Clear All
                 </button>
               )}
             </div>
 
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-green-100">
-                    <th className="py-3 px-4 text-left">Time</th>
-                    <th className="py-3 px-4 text-left">Type</th>
-                    <th className="py-3 px-4 text-left">Message</th>
-                    <th className="py-3 px-4 text-right">Action</th>
+            <div className="overflow-x-auto border rounded-lg shadow-sm">
+              <table className="w-full table-auto">
+                <thead className="bg-green-100 text-sm text-left text-green-900">
+                  <tr>
+                    <th className="px-4 py-3">Time</th>
+                    <th className="px-4 py-3">Type</th>
+                    <th className="px-4 py-3">Message</th>
+                    <th className="px-4 py-3 text-right">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -217,29 +205,30 @@ const markAsReviewed = async (reportId) => {
                     filteredNotifications.map((notif, index) => (
                       <tr
                         key={notif.id}
-                        className={`hover:bg-gray-50 ${notif.read ? '' : 'font-bold'} ${index % 2 === 0 ? 'bg-green-50' : 'bg-white'}`}
+                        className={`text-sm ${notif.read ? 'bg-white' : 'bg-green-50 font-semibold'} hover:bg-green-100 transition-colors`}
                       >
-                        <td className="py-3 px-4 border-t">{notif.time}</td>
-                        <td className="py-3 px-4 border-t">
-                          <span className={`inline-block px-2 py-1 rounded-full text-xs ${getNotificationTypeColor(notif.type)}`}>
+                        <td className="px-4 py-3 border-t">{notif.time}</td>
+                        <td className="px-4 py-3 border-t">
+                          <span className={`px-2 py-1 rounded-full text-xs ${getNotificationTypeColor(notif.type)}`}>
                             {notif.type}
                           </span>
                         </td>
-                        <td className="py-3 px-4 border-t">{notif.message}</td>
-                        <td className="py-3 px-4 border-t text-right space-x-2">
-                          {notif.read ? (
-                            <button className="text-blue-600 hover:text-blue-800" onClick={() => markAsUnread(notif.id)}>Mark as Unread</button>
-                          ) : (
-                            <button className="text-blue-600 hover:text-blue-800" onClick={() => markAsRead(notif.id)}>Mark as Read</button>
-                          )}
+                        <td className="px-4 py-3 border-t">{notif.message}</td>
+                        <td className="px-4 py-3 border-t text-right">
+                          <button
+                            onClick={() => notif.read ? markAsUnread(notif.id) : markAsRead(notif.id)}
+                            className="text-blue-600 hover:underline"
+                          >
+                            {notif.read ? 'Mark Unread' : 'Mark Read'}
+                          </button>
                         </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="4" className="py-8 text-center text-gray-500">
-                        <Bell size={36} className="mx-auto text-gray-400 mb-2" />
-                        No notifications at the moment
+                      <td colSpan="4" className="py-10 text-center text-gray-500">
+                        <Bell size={36} className="mx-auto mb-2" />
+                        No notifications available
                       </td>
                     </tr>
                   )}
@@ -249,130 +238,106 @@ const markAsReviewed = async (reportId) => {
           </div>
         )}
 
-
+        {/* User Reports Tab */}
         {activeTab === 'reports' && (
-          <div className="space-y-6">
-            {isLoading ? (
-              <div className="p-4 text-center">Loading reports...</div>
-            ) : (
-              <>
-                {/* Reports Table */}
-        <div className="border rounded-lg overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-green-100">
-                <th className="py-3 px-4 text-left">User ID</th>
-                <th className="py-3 px-4 text-left">Bin Category</th>
-                <th className="py-3 px-4 text-left">Problem</th>
-                <th className="py-3 px-4 text-left">Description</th>
-                <th className="py-3 px-4 text-left">Date</th>
-                <th className="py-3 px-4 text-left">Reviewed</th>
-              </tr>
-            </thead>
-            <tbody>
-  {Array.isArray(reports) && reports.length > 0 ? (
-    reports.map((report, index) => (
-      <tr key={report._id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-green-50' : 'bg-white'}`}>
-        <td className="py-3 px-4 border-t">{report.userId?.uniqueId || 'N/A'}</td>
-        <td className="py-3 px-4 border-t">{report.binCategory || 'N/A'}</td>
-        <td className="py-3 px-4 border-t">{report.problem || 'N/A'}</td>
-        <td className="py-3 px-4 border-t">{report.description || 'N/A'}</td>
-        <td className="py-3 px-4 border-t">
-        {report.createdAt ? format(new Date(report.createdAt), 'dd/MM/yyyy HH:mm') : 'N/A'}
-      </td>
-        <td className="py-3 px-4 border-t">
-          {report.reviewed ? (
-            <span className="text-green-600">✓ Reviewed</span>
-          ) : (
-            <button
-              onClick={() => markAsReviewed(report._id)}
-              className="bg-green-100 text-green-800 px-3 py-1 rounded hover:bg-green-200"
-            >
-              Mark Reviewed
-            </button>
-          )}
-        </td>
-        {/* Optional: Add a date column if needed */}
-        {/* <td className="py-3 px-4 border-t">
-          {new Date(report.createdAt).toLocaleString()}
-        </td> */}
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan={5} className="py-8 text-center text-gray-500">
-        <Bell size={36} className="mx-auto text-gray-400 mb-2" />
-        No reports found
-      </td>
-    </tr>
-  )}
-</tbody>
+          <div className="space-y-8">
+            {/* Reports Table */}
+            <div className="border rounded-lg shadow-sm overflow-x-auto">
+              <table className="w-full table-auto">
+                <thead className="bg-green-100 text-green-900 text-sm text-left">
+                  <tr>
+                    <th className="px-4 py-3">User ID</th>
+                    <th className="px-4 py-3">Bin Category</th>
+                    <th className="px-4 py-3">Problem</th>
+                    <th className="px-4 py-3">Description</th>
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3">Reviewed</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredReports.length > 0 ? (
+                    filteredReports.map((report, index) => (
+                      <tr key={report._id} className={`${index % 2 === 0 ? 'bg-white' : 'bg-green-50'} hover:bg-green-100 transition`}>
+                        <td className="px-4 py-3 border-t">{report.userId?.uniqueId || '—'}</td>
+                        <td className="px-4 py-3 border-t">{report.binCategory || '—'}</td>
+                        <td className="px-4 py-3 border-t">{report.problem || '—'}</td>
+                        <td className="px-4 py-3 border-t">{report.description || '—'}</td>
+                        <td className="px-4 py-3 border-t">{report.createdAt ? format(new Date(report.createdAt), 'dd/MM/yyyy HH:mm') : '—'}</td>
+                        <td className="px-4 py-3 border-t">
+                          {report.reviewed ? (
+                            <span className="text-green-600 font-semibold">✓ Reviewed</span>
+                          ) : (
+                            <button
+                              onClick={() => markAsReviewed(report._id)}
+                              className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1 rounded"
+                            >
+                              Mark Reviewed
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="py-10 text-center text-gray-500">
+                        <Bell size={36} className="mx-auto mb-2" />
+                        No reports available
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
 
-          </table>
-        </div>
-
-                {/* Send Notification Section */}
-                <div className="border rounded-lg p-6">
-                  <h3 className="text-xl font-bold mb-4">Send Bulk Notification</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Target</label>
-                      <select
-                        value={notificationTarget}
-                        onChange={(e) => setNotificationTarget(e.target.value)}
-                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                      >
-                        <option value="AllUsers">All Users</option>
-                        <option value="AllOperators">All Operators</option>
-                        <option value="SpecificUsers">Specific Users</option>
-                        <option value="SpecificOperators">Specific Operators</option>
-                      </select>
-                    </div>
-                    {(notificationTarget === 'SpecificUsers' || notificationTarget === 'SpecificOperators') && (
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                          Specific IDs (comma-separated, e.g., CBU001, CBU002)
-                        </label>
-                        <input
-                          type="text"
-                          value={specificIds}
-                          onChange={(e) => setSpecificIds(e.target.value)}
-                          className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                          placeholder="CBU001, CBU002"
-                        />
-                      </div>
-                    )}
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700">Message</label>
-                      <textarea
-                        value={notificationMessage}
-                        onChange={(e) => setNotificationMessage(e.target.value)}
-                        className="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                        rows="4"
-                        required
-                      />
-                    </div>
-                    <button
-                      onClick={handleSendBulkNotification}
-                      className="bg-green-700 text-white px-4 py-2 rounded hover:bg-green-800"
-                    >
-                      Send Notification
-                    </button>
-                    {notificationStatus && (
-                      <div
-                        className={`mt-2 p-2 rounded ${
-                          notificationStatus.includes('successfully')
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {notificationStatus}
-                      </div>
-                    )}
-                  </div>
+            {/* Send Bulk Notification Section */}
+            <div className="border rounded-lg p-6 shadow-sm bg-white">
+              <h3 className="text-xl font-semibold mb-4 text-gray-800">Send Bulk Notification</h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Target Audience</label>
+                  <select
+                    value={notificationTarget}
+                    onChange={(e) => setNotificationTarget(e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                  >
+                    <option value="AllUsers">All Users</option>
+                    <option value="AllOperators">All Operators</option>
+                    <option value="SpecificUsers">Specific Users</option>
+                    <option value="SpecificOperators">Specific Operators</option>
+                  </select>
                 </div>
-              </>
-            )}
+
+                {(notificationTarget === 'SpecificUsers' || notificationTarget === 'SpecificOperators') && (
+                  <div>
+                    <label className="block text-sm font-medium mb-1">Specific IDs (comma separated)</label>
+                    <input
+                      type="text"
+                      value={specificIds}
+                      onChange={(e) => setSpecificIds(e.target.value)}
+                      className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="CBU001, CBU002"
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-medium mb-1">Message</label>
+                  <textarea
+                    value={notificationMessage}
+                    onChange={(e) => setNotificationMessage(e.target.value)}
+                    className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+                    rows={4}
+                  />
+                </div>
+
+                <button
+                  onClick={handleSendBulkNotification}
+                  className="bg-green-700 hover:bg-green-800 text-white font-medium px-4 py-2 rounded transition"
+                >
+                  Send Notification
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>
@@ -382,8 +347,8 @@ const markAsReviewed = async (reportId) => {
           show={showCreateAlertModal}
           onClose={() => setShowCreateAlertModal(false)}
           formData={newNotificationFormData}
-          onFormChange={handleNotificationFormChange}
-          onSave={handleSendNotification}
+          onFormChange={(form) => setNewNotificationFormData(form)}
+          onSave={handleSendBulkNotification}
         />
       )}
     </div>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate, Outlet } from 'react-router-dom';
 import ErrorBoundary from './Components/ErrorBoundary';
 import api from './api/axios';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 // Common Pages
 import LandingPage from './Pages/LandingPage';
@@ -18,6 +20,7 @@ import SystemSettings from './Pages/Admin/SystemSettings/SystemSettings';
 import DataAnalyticsReports from './Pages/Admin/DataAnalyticsReports/DataAnalyticsReports';
 import ProfilePage from './Pages/Admin/ProfilePage/ProfilePage';
 import LogoutModal from './Components/LogoutModal/LogoutModal';
+import { BinProvider } from './Components/BinManagement/BinContext';
 
 // User Pages
 import HomePage from './Pages/User/Home/HomePage';
@@ -110,7 +113,9 @@ useEffect(() => {
           handleLogoutClick={handleLogoutClick}
         />
         <div className="flex-1 overflow-y-auto">
-          <Outlet />
+          <BinProvider>
+              <Outlet />
+          </BinProvider>
         </div>
       </div>
       {isLogoutModalOpen && (
@@ -171,6 +176,7 @@ function App() {
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const userId = currentUser?.userId;
   return (
+    <>
     <Router>
       <Routes>
         {/* Public Routes */}
@@ -189,6 +195,7 @@ function App() {
           <Route path="system-settings" element={<ErrorBoundary><SystemSettings /></ErrorBoundary>} />
           <Route path="profile" element={<ErrorBoundary><ProfilePage /></ErrorBoundary>} />
         </Route>
+        
 
       
         {/*User Pages*/}
@@ -205,7 +212,10 @@ function App() {
         {/* <Route path="/" element={<Navigate to={token ? 'dashboard' : '/login'} />} /> */}
       </Routes>
     </Router>
+    <ToastContainer position="bottom-right" autoClose={3000} />
+    </>
   );
 }
+
 
 export default App;

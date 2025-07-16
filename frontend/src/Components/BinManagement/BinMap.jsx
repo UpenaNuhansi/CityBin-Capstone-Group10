@@ -23,15 +23,21 @@ const Routing = ({ from, to }) => {
     const routingControl = L.Routing.control({
       waypoints: [L.latLng(from.lat, from.lng), L.latLng(to.lat, to.lng)],
       routeWhileDragging: false,
+      lineOptions: {
+        styles: [{ color: 'red', weight: 4 }], // 🔴 red route line
+      },
+      show: false,
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
     }).addTo(map);
 
-    return () => {
-      map.removeControl(routingControl);
-    };
+    return () => map.removeControl(routingControl);
   }, [from, to, map]);
 
   return null;
 };
+
 
 // Resize fix
 const ResizeMap = () => {
@@ -59,9 +65,9 @@ const BinMap = ({ bins, onAssignClick = () => {}, routeToBin, role = 'Operator' 
   return (
     <MapContainer
       center={[6.7146, 80.7875]}
-      zoom={16}
+      zoom={17}
       scrollWheelZoom={true}
-      style={{ height: '400px', width: '100%' }}
+      style={{ height: '400px', width: '100%', zIndex: 0 }}
       whenCreated={(mapInstance) => {
         mapRef.current = mapInstance;
       }}

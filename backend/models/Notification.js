@@ -39,6 +39,10 @@ const notificationSchema = new mongoose.Schema({
     enum: ['Unread', 'Read'],
     default: 'Unread',
   },
+  done: {
+    type: Boolean,
+    default: false
+  },
   forAllOperators: {
   type: Boolean,
   default: false
