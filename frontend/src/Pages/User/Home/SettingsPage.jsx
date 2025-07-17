@@ -111,7 +111,7 @@ function SettingsPage() {
             <div className="flex items-center justify-between">
               <span>Bin Status Alerts</span>
               <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.binStatus ? 'bg-citybin-green' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.binStatus ? 'bg-citybin-green' : 'bg-green-400'}`}
                 onClick={() => handleNotificationToggle('binStatus')}
               >
                 <span 
@@ -123,7 +123,7 @@ function SettingsPage() {
             <div className="flex items-center justify-between">
               <span>Collection Reminders</span>
               <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.collectionReminders ? 'bg-citybin-green' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.collectionReminders ? 'bg-citybin-green' : 'bg-green-400'}`}
                 onClick={() => handleNotificationToggle('collectionReminders')}
               >
                 <span 
@@ -135,7 +135,7 @@ function SettingsPage() {
             <div className="flex items-center justify-between">
               <span>Maintenance Alerts</span>
               <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.maintenanceAlerts ? 'bg-citybin-green' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.maintenanceAlerts ? 'bg-citybin-green' : 'bg-green-400'}`}
                 onClick={() => handleNotificationToggle('maintenanceAlerts')}
               >
                 <span 
@@ -147,7 +147,7 @@ function SettingsPage() {
             <div className="flex items-center justify-between">
               <span>Rewards & Achievements</span>
               <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.rewardsAchievements ? 'bg-citybin-green' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.rewardsAchievements ? 'bg-citybin-green' : 'bg-green-400'}`}
                 onClick={() => handleNotificationToggle('rewardsAchievements')}
               >
                 <span 
@@ -159,7 +159,7 @@ function SettingsPage() {
             <div className="flex items-center justify-between">
               <span>System Updates/General Info</span>
               <button 
-                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.systemUpdates ? 'bg-citybin-green' : 'bg-gray-300'}`}
+                className={`relative inline-flex items-center h-6 rounded-full w-11 ${notifications.systemUpdates ? 'bg-citybin-green' : 'bg-green-400'}`}
                 onClick={() => handleNotificationToggle('systemUpdates')}
               >
                 <span 
@@ -276,7 +276,7 @@ function SettingsPage() {
         <img 
           src={BinImage} 
           alt="Recycle bin" 
-          className="w-full" 
+          className="w-60 h-60" 
         />
       </div>
     </div>
