@@ -303,32 +303,6 @@ exports.markNotificationDone = async (req, res) => {
   }
 };
 
-// exports.updateReadStatus = async (req, res) => {
-//   const { id } = req.params;
-//   const { isRead } = req.body; // expects boolean true/false
-
-//   if (typeof isRead !== 'boolean') {
-//     return res.status(400).json({ success: false, message: '`isRead` must be boolean' });
-//   }
-
-//   try {
-//     const updated = await Notification.findByIdAndUpdate(
-//       id,
-//       { status: isRead ? 'Read' : 'Unread' },
-//       { new: true }
-//     );
-
-//     if (!updated) {
-//       return res.status(404).json({ success: false, message: 'Notification not found' });
-//     }
-
-//     res.status(200).json({ success: true, notification: updated });
-//   } catch (err) {
-//     console.error('Failed to update read status:', err.message);
-//     res.status(500).json({ success: false, message: 'Server error' });
-//   }
-// };
-
 exports.updateReadStatus = async (req, res) => {
   try {
     const { id } = req.params;

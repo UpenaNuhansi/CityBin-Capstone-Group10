@@ -148,7 +148,7 @@ export default function AlertsNotifications({ handleNavigation }) {
   };
 
   return (
-    <div className="flex-1 flex flex-col ml-64 bg-gray-50 min-h-screen">
+    <div className="mt-18 flex-1 flex flex-col ml-64 bg-gray-50 min-h-screen">
       <TopBar
         title="Alerts & Notifications"
         searchText={searchText}

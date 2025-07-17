@@ -40,7 +40,7 @@ const AlertPage = () => {
   if (loading) return <div className="p-6 text-center text-lg">Loading notifications...</div>;
 
   return (
-    <div className="ml-64 mt-12 p-6 min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-sans">
+    <div className="ml-64 mt-15 p-6 min-h-screen bg-gradient-to-br from-green-50 to-green-100 font-sans">
       <div className="max-w-3xl mx-auto">
         <h2 className="text-2xl font-bold text-green-900 mb-6 flex items-center gap-2 text-center">
           <Bell className="w-6 h-6" />

@@ -8,11 +8,6 @@ const auth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    // console.log('Auth middleware: Decoded token:', decoded); // Debug log
-    // if (!decoded.id || !decoded.role) {
-    //   console.error('Auth middleware: Invalid token payload, missing id or role');
-    //   return res.status(401).json({ success: false, message: 'Invalid token payload' });
-    // }
     req.user = {
       id: decoded.id, // Standardize to _id for consistency
       role: decoded.role

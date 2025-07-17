@@ -32,7 +32,12 @@ const userSchema = new mongoose.Schema({
   },
   lastLogin: { 
     type: Date 
+  },
+  avatar: { 
+    type: String, 
+    default: '' 
   }
+
 });
 
 // Auto hash password and generate unified uniqueId

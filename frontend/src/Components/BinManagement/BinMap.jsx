@@ -54,7 +54,7 @@ const BinMap = ({ bins, onAssignClick = () => {}, routeToBin, role = 'Operator' 
   const mapRef = useRef(null);
   const operatorLocation = { lat: 6.715, lng: 80.787 };
 
-  // 💡 This will re-center the map when a bin is selected
+  // This will re-center the map when a bin is selected
   useEffect(() => {
     if (routeToBin && mapRef.current) {
       const { lat, lng } = routeToBin.coordinates;
