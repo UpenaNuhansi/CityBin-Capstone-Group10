@@ -8,6 +8,7 @@ function ReportPage() {
   const [description, setDescription] = useState('');
   const [selectedBin, setSelectedBin] = useState('');
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [isTyping, setIsTyping] = useState(false);
   const navigate = useNavigate();
 
   const submitReport = async (reportData) => {
@@ -22,6 +23,11 @@ function ReportPage() {
       console.error('Submission error:', error.response?.data || error.message);
       throw new Error(error.response?.data?.message || 'Failed to submit report');
     }
+  };
+
+  const handleDescriptionChange = (e) => {
+    setDescription(e.target.value);
+    setIsTyping(e.target.value.length > 0);
   };
 
   const handleSubmit = async (e) => {
@@ -44,6 +50,7 @@ function ReportPage() {
         setDescription('');
         setSelectedBin('');
         setSelectedProblem('overflow');
+        setIsTyping(false); // Reset typing state after successful submission
         setTimeout(() => {
           setMessage({ text: '', type: '' });
           navigate('/user/home');
@@ -175,7 +182,7 @@ function ReportPage() {
             className="w-full h-32 bg-citybin-light-green border border-green-300 rounded-md py-3 px-4 focus:outline-none focus:ring-2 focus:ring-green-500"
             placeholder="Enter additional details..."
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={handleDescriptionChange}
             required
           ></textarea>
         </div>
@@ -190,13 +197,16 @@ function ReportPage() {
         </div>
       </form>
       
-      <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
-        <img 
-          src={BinImage}
-          alt="Recycle bin" 
-          className="w-full"
-        />
-      </div>
+      {/* Hide image when typing in description */}
+      {!isTyping && (
+        <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
+          <img 
+            src={BinImage}
+            alt="Recycle bin" 
+            className="w-full"
+          />
+        </div>
+      )}
     </div>
   );
 }
