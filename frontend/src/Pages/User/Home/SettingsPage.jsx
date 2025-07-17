@@ -20,6 +20,7 @@ function SettingsPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedUserInfo, setEditedUserInfo] = useState({...userInfo});
   const [message, setMessage] = useState({ text: '', type: '' });
+  const [isUserInfoHovered, setIsUserInfoHovered] = useState(false);
 
   useEffect(() => {
     // Fetch user settings from backend
@@ -171,7 +172,7 @@ function SettingsPage() {
           <div className="mt-6">
             <button 
               onClick={handleSaveSettings}
-              className="w-full bg-citybin-green text-white rounded-md py-3 font-medium"
+              className="w-full bg-citybin-green text-black rounded-md py-3 font-medium"
             >
               Save Changes
             </button>
@@ -179,7 +180,11 @@ function SettingsPage() {
         </div>
         
         {/* User Information */}
-        <div className="bg-citybin-light-green p-6 rounded-lg bg-green-200">
+        <div 
+          className="bg-citybin-light-green p-6 rounded-lg bg-green-200"
+          onMouseEnter={() => setIsUserInfoHovered(true)}
+          onMouseLeave={() => setIsUserInfoHovered(false)}
+        >
           <h2 className="text-xl font-semibold mb-4">User Info</h2>
           
           <div className="flex justify-center mb-4">
@@ -232,12 +237,7 @@ function SettingsPage() {
                 >
                   Save
                 </button>
-                <button 
-                  onClick={handleEditCancel}
-                  className="flex-1 bg-gray-300 text-gray-600 rounded-md py-2"
-                >
-                  Cancel
-                </button>
+                
               </div>
             </div>
           ) : (
@@ -272,11 +272,11 @@ function SettingsPage() {
         </div>
       </div>
       
-      <div className="hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs">
+      <div className={`hidden md:block fixed right-6 bottom-6 w-1/4 max-w-xs transition-opacity duration-300 ${isUserInfoHovered ? 'opacity-0' : 'opacity-100'}`}>
         <img 
           src={BinImage} 
           alt="Recycle bin" 
-          className="w-full"
+          className="w-full" 
         />
       </div>
     </div>
