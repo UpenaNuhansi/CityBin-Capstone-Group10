@@ -31,7 +31,7 @@ const Sidebar = ({ activePage, handleLogoutClick }) => {
   return (
     <aside className="fixed top-0 left-0 w-64 h-screen bg-gradient-to-b from-green-900 to-green-800 text-white shadow-xl flex flex-col justify-between">
       {/* Logo/Header */}
-      <div className="px-6 py-6 border-b border-green-700">
+      <div className="px-6 py-2 border-b border-green-700">
         <h1 className="text-2xl font-extrabold tracking-wide">🌿 CityBin</h1>
         <p className="text-sm text-green-200 mt-1">Smart Waste Manager</p>
       </div>
@@ -66,7 +66,7 @@ const Sidebar = ({ activePage, handleLogoutClick }) => {
           onClick={handleLogoutClick}
           className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-200"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-6 h-6" />
           Logout
         </button>
       </div>

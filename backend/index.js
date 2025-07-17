@@ -10,6 +10,8 @@ const binRoutes = require('./routers/binRoutes');
 const reportRoutes = require('./routers/reportRoutes');
 const notificationRoutes = require('./routers/notificationRoutes');
 const auth = require('./middlewares/auth');
+const userBins = require('./routers/userBins');
+const userSettings = require('./routers/userSettingsRoutes');
 
 
 const app = express();
@@ -41,6 +43,9 @@ try {
   app.use('/api/bins', binRoutes);
   app.use('/api/reports', reportRoutes);
   app.use('/api/notifications', notificationRoutes);
+  app.use('/api/user-bins', userBins);
+  app.use('/api/user-settings', userSettings);
+  app.use('/api/uploads', express.static('uploads'));
 } catch (err) {
   console.error('Route mounting error:', err);
   process.exit(1);

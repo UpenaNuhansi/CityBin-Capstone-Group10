@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { User, Mail, Shield, Calendar, Clock } from 'lucide-react';
+import { User, Mail, Shield, Calendar } from 'lucide-react';
 import TopBar from '../../../Components/TopBar/TopBar';
-import api from '../../../api/axios';
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -21,97 +20,98 @@ export default function ProfilePage() {
           setSearchText={setSearchText}
           onProfileClick={() => {}}
         />
-        <div className="flex-1 p-4 bg-white flex items-center justify-center">
-          <p className="text-gray-600">Loading profile...</p>
+        <div className="flex-1 p-4 flex items-center justify-center bg-gray-100">
+          <p className="text-gray-500 text-lg">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col ml-64">
+    <div className="flex-1 flex flex-col ml-64 mt-18 min-h-screen bg-gray-100">
       <TopBar
         title="Profile"
         searchText={searchText}
         setSearchText={setSearchText}
         onProfileClick={() => {}}
       />
-      
-      <div className="flex-1 p-4 bg-white">
-        <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="bg-green-800 p-6 text-white">
-            <h1 className="text-2xl font-bold">User Profile</h1>
+
+      <div className="p-6 max-w-4xl mx-auto w-full">
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-900 to-green-800 px-6 py-5">
+            <h2 className="text-2xl font-bold text-white">User Profile</h2>
           </div>
-          
-          <div className="p-6">
+
+          {/* Info Content */}
+          <div className="p-6 space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <User className="text-green-800" size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Username</p>
-                  <p className="font-medium">{user.username}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <Mail className="text-green-800" size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Email</p>
-                  <p className="font-medium">{user.email}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <Shield className="text-green-800" size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Role</p>
-                  <p className="font-medium capitalize">{user.role.toLowerCase()}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-full">
-                  <Calendar className="text-green-800" size={24} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Last Login</p>
-                  <p className="font-medium">
-                    {user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never logged in'}
-                  </p>
-                </div>
-              </div>
+              {/* Username */}
+              <InfoItem icon={<User className="text-green-700" />} label="Username" value={user.username} />
+              {/* Email */}
+              <InfoItem icon={<Mail className="text-green-700" />} label="Email" value={user.email} />
+              {/* Role */}
+              <InfoItem icon={<Shield className="text-green-700" />} label="Role" value={user.role?.toLowerCase()} />
+              {/* Last Login */}
+              <InfoItem
+                icon={<Calendar className="text-green-700" />}
+                label="Last Login"
+                value={user.lastLogin ? new Date(user.lastLogin).toLocaleString() : 'Never logged in'}
+              />
             </div>
-            
-            <div className="mt-8 pt-6 border-t border-gray-200">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4">Account Details</h2>
-              
+
+            {/* Account Details */}
+            <div className="border-t pt-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Account Details</h3>
               <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Account Status</span>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    user.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {user.status || 'Active'}
-                  </span>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Member Since</span>
-                  <span className="text-gray-800">
-                    {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
-                  </span>
-                </div>
+                <DetailRow
+                  label="Account Status"
+                  value={user.status || 'Active'}
+                  isBadge={true}
+                />
+                <DetailRow
+                  label="Member Since"
+                  value={user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'}
+                />
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// 🧩 Small reusable item block with icon
+function InfoItem({ icon, label, value }) {
+  return (
+    <div className="flex items-center space-x-4">
+      <div className="bg-green-100 p-3 rounded-full">{icon}</div>
+      <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="text-base font-medium text-gray-800">{value}</p>
+      </div>
+    </div>
+  );
+}
+
+// 🧩 Reusable row for account details
+function DetailRow({ label, value, isBadge }) {
+  return (
+    <div className="flex justify-between items-center">
+      <span className="text-gray-600">{label}</span>
+      {isBadge ? (
+        <span
+          className={`px-2 py-1 rounded-full text-xs font-medium 
+            ${value === 'Active'
+              ? 'bg-green-100 text-green-800'
+              : 'bg-red-100 text-red-800'}`}
+        >
+          {value}
+        </span>
+      ) : (
+        <span className="text-gray-800">{value}</span>
+      )}
     </div>
   );
 }

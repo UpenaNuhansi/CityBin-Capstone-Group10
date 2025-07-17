@@ -140,36 +140,21 @@ export default function BinManagement() {
     setShowMaintenanceModal(false);
   };
 
-  const handleSaveNewBin = async () => {
-    // if (newBin.id && newBin.location && newBin.coordinates?.lat && newBin.coordinates?.lng) 
+  const handleSaveNewBin = async () => {   
     if (newBin.location && newBin.coordinates?.lat && newBin.coordinates?.lng) {
       try {
         const payload = {
           //binId: `CB${String(Date.now()).slice(-4)}`,
           binId: newBin.binId, 
-          location: newBin.location,
-          // coordinates: newBin.coordinates,
+          location: newBin.location,          
           coordinates: {
             lat: Number(newBin.coordinates.lat),
             lng: Number(newBin.coordinates.lng),
-          },
-          // wasteLevel: newBin.wasteLevel,
+          },        
           wasteLevel: Number(newBin.wasteLevel),
           maintenance: newBin.maintenance,
           deviceStatus: newBin.deviceStatus,
         };
-      //   const res = await createBin(payload);
-      //   setBinData(prev => [...prev, {
-      //     id: res.data.data.binId,
-      //     ...res.data.data,
-      //   }]);
-      //   setShowAddBinModal(false);
-      //   resetNewBin();
-      //   toast.success('Bin added successfully');
-      // } catch (err) {
-      //   console.error('Failed to create bin:', err);
-      //   toast.error('Failed to create bin');
-      // }
 
       const bin = await createBin(payload);
       const newBinData = {
@@ -192,28 +177,6 @@ export default function BinManagement() {
 
 setBinData(prev => [...prev, newBinData]);
 await fetchBins();
-
-      // const res = await createBin(payload);
-      //   const newBinData = {
-      //     _id: res.data.data._id,
-      //     binId: res.data.data.binId,
-      //     id: res.data.data.binId, // For BinMap
-      //     location: res.data.data.location,
-      //     wasteLevel: Number(res.data.data.wasteLevel),
-      //     maintenance: res.data.data.maintenance,
-      //     coordinates: {
-      //       lat: Number(res.data.data.coordinates.lat),
-      //       lng: Number(res.data.data.coordinates.lng),
-      //     },
-      //     deviceStatus: res.data.data.deviceStatus,
-      //     lastUpdate: res.data.data.lastUpdate || 'Just now',
-      //     assignedOperator: res.data.data.assignedOperator || null,
-      //   };
-      //   setBinData(prev => [...prev, newBinData]);
-      //   await fetchBins(); // Sync with backend
-      //   setShowAddBinModal(false);
-      //   setSearchText(''); // Clear search to show all bins
-      //   resetNewBin();
         toast.success('Bin added successfully');
       } catch (err) {
         console.error('Failed to create bin:', err.message, err.response?.data);
@@ -221,9 +184,7 @@ await fetchBins();
       }
     } else {
       toast.error('Please provide Bin ID, Location, and valid coordinates');
-    }
-
-    // }
+    }    
   };
 
   const resetNewBin = () => {
@@ -266,7 +227,7 @@ await fetchBins();
 
  return (
     <div className="flex h-screen bg-white">
-      <div className="flex-1 flex flex-col ml-64 min-w-0 overflow-hidden">
+      <div className="mt-20 flex-1 flex flex-col ml-64 min-w-0 overflow-hidden">
         <TopBar
           title="Bin Management"
           searchText={searchText}
@@ -322,7 +283,7 @@ await fetchBins();
             </div>
 
             <div className="flex justify-between items-center mb-6">
-            <h3 className="text-2xl font-semibold text-green-900">Bin Management</h3>
+            <h3 className="text-2xl font-semibold text-green-900">Bin Management Data</h3>
             <button
               onClick={handleAddBin}
               className="bg-green-700 text-white px-4 py-2 rounded-lg hover:bg-green-800 flex items-center shadow-md transition"

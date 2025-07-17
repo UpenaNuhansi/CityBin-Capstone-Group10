@@ -277,53 +277,6 @@ const updateBinStatus = async (req, res) => {
   }
 };
 
-// Get bins assigned to the currently logged-in operator
-// const getBinsAssignedToOperator = async (req, res) => {
-//   try {
-//     const userRole = req.user.role;
-
-//     if (userRole === 'Operator') {
-//       const operatorId = req.user.id;
-//       const bins = await Bin.find({ assignedOperator: operatorId });
-//       return res.status(200).json({ data: bins });
-//     }
-
-//     if (userRole === 'Admin') {
-//       const bins = await Bin.find({ assignedOperator: { $ne: null } });
-//       return res.status(200).json({ data: bins });
-//     }
-
-//     return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
-//   } catch (error) {
-//     console.error('Error getting bins for operator:', error);
-//     res.status(500).json({ message: 'Failed to fetch assigned bins' });
-//   }
-// };
-
-// const getBinsAssignedToOperator = async (req, res) => {
-//   try {
-//     const userRole = req.user.role;
-//     const operatorId = req.user.id;
-
-//     let bins;
-//     if (userRole === 'Operator') {
-//       bins = await Bin.find({ assignedOperator: operatorId }).populate('assignedOperator', 'username uniqueId email');
-//       return res.status(200).json({ data: bins });
-//     }
-
-//     if (userRole === 'Admin') {
-//       bins = await Bin.find({ assignedOperator: { $ne: null } }).populate('assignedOperator', 'username uniqueId email');
-//       return res.status(200).json({ data: bins });
-//     }
-
-//     return res.status(403).json({ message: 'Access denied: Operators or Admins only.' });
-//   } catch (error) {
-//     console.error('Error getting bins for operator:', error);
-//     res.status(500).json({ message: 'Failed to fetch assigned bins' });
-//   }
-// };
-
-
 const getBinsAssignedToOperator = async (req, res) => {
   try {
     const userRole = req.user.role;
@@ -370,98 +323,6 @@ const getBinsAssignedToOperator = async (req, res) => {
   }
 };
 
-
-
-
-// New: Get Bin Statistics
-// const getBinStats = async (req, res) => {
-//   try {
-//     const total = await Bin.countDocuments();
-//     const active = await Bin.countDocuments({ status: 'OK' });
-//     const full = await Bin.countDocuments({ status: 'Full' });
-//     const maintenance = await Bin.countDocuments({ status: 'Maintenance Required' });
-
-//     res.status(200).json({ total, active, full, maintenance });
-//   } catch (error) {
-//     console.error('Error fetching bin stats:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
-
-// const getBinStats = async (req, res) => {
-//   try {
-//     const bins = await Bin.find(); // No filtering — show all to both roles
-
-//     const total = bins.length;
-//     const active = bins.filter(bin => bin.deviceStatus === 'online').length;
-//     const full = bins.filter(bin => bin.wasteLevel >= 90).length;
-//     const maintenance = bins.filter(bin => bin.maintenance === 'Required').length;
-
-//     res.status(200).json({
-//       total,
-//       active,
-//       full,
-//       maintenance
-//     });
-//     // New: Allow both Admin and Operator
-// // if (req.user.role !== 'Admin' && req.user.role !== 'Operator') {
-// //   return res.status(403).json({ message: 'Access denied.' });
-// // }
-
-//   } catch (error) {
-//     console.error('Error fetching bin stats:', error);
-//     res.status(500).json({ message: 'Internal server error' });
-//   }
-// };
-
-// const getBinStats = async (req, res) => {
-//   try {
-//     const total = await Bin.countDocuments();
-//     const active = await Bin.countDocuments({ status: 'OK' });
-//     const full = await Bin.countDocuments({ status: 'Full' });
-//     const maintenance = await Bin.countDocuments({ status: 'Maintenance' });
-
-//     res.status(200).json({
-//       total,
-//       active,
-//       full,
-//       maintenance,
-//     });
-//   } catch (error) {
-//     console.error('Failed to get bin stats:', error.message);
-//     res.status(500).json({ message: 'Error fetching bin statistics' });
-//   }
-// };
-
-
-// const getBinStats = async (req, res) => {
-//   try {
-//     const user = req.user; // Populated by auth middleware
-//     let query = {};
-
-//     // If Operator, optionally filter by assigned bins 
-//     // if (user.role === 'Operator') {
-//     //   query.assignedOperator = user.id;
-//     // }
-
-//     const total = await Bin.countDocuments(query);
-//     const active = await Bin.countDocuments({ ...query, deviceStatus: 'online' });
-//     const full = await Bin.countDocuments({ ...query, wasteLevel: { $gte: 90 } });
-//     const maintenance = await Bin.countDocuments({ ...query, maintenance: 'Required' });
-
-//     res.status(200).json({
-//       total,
-//       active,
-//       full,
-//       maintenance,
-//     });
-//   } catch (error) {
-//     console.error('Failed to get bin stats:', error.message);
-//     res.status(500).json({ message: 'Error fetching bin statistics' });
-//   }
-// };
-
-
 const getBinStats = async (req, res) => {
   try {
     const total = await Bin.countDocuments();
@@ -473,9 +334,6 @@ const getBinStats = async (req, res) => {
     res.status(200).json({ total: 0, active: 0, full: 0, maintenance: 0, error: 'Failed to fetch bin statistics' });
   }
 };
-
-
-
 
 module.exports = {
   getAllBins,

@@ -35,7 +35,6 @@ export default function UserManagement({ handleNavigation }) {
   }
 };
 
-
   const handleEditUser = (userId) => {
     const user = users.find((u) => u._id === userId);
     if (user) {
@@ -96,8 +95,6 @@ export default function UserManagement({ handleNavigation }) {
     })
   : [];
 
-
-
   if (isLoading) {
     return (
       <div className="flex-1 flex flex-col ml-64">
@@ -115,7 +112,7 @@ export default function UserManagement({ handleNavigation }) {
   }
 
   return (
-    <div className="flex-1 flex flex-col ml-64 bg-gray-100 min-h-screen">
+    <div className="flex-1 flex flex-col ml-64 mt-20 bg-gray-100 min-h-screen">
       <TopBar
         title="User Management"
         searchText={searchText}

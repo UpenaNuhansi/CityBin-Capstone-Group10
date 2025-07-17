@@ -21,7 +21,7 @@ const getReports = async (req, res) => {
   }
 };
 
-// console.log('📩 Incoming report data:', req.body);
+// console.log('Incoming report data:', req.body);
 const submitReport = async (req, res) => {
   try {
     const { binCategory, problem, description, userId, uniqueId, submittedAt } = req.body;
@@ -123,7 +123,6 @@ const markAsReviewed = async (req, res) => {
     });
   }
 };
-
 
 module.exports = {
   getReports,

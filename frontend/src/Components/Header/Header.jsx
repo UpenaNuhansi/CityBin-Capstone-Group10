@@ -17,7 +17,7 @@ function Header({ onSearch }) {
   };
 
   return (
-    <header className="fixed top-0 left-64 right-0 z-50 bg-white border-b border-gray-200 px-6 py-3 flex justify-between items-center shadow-sm">
+    <header className="fixed top-0 left-64 right-0 z-50 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center shadow-sm">
       {/* Search Bar */}
       <div className="relative w-full max-w-md">
         <input

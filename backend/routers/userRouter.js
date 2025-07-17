@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middlewares/auth');
 const userController = require('../controllers/userController');
+const upload = require('../middlewares/uploadAvatar');
+const { uploadUserAvatar } = require('../controllers/userController');
 
 // Middleware to ensure only admins can access these routes
 const adminOnly = (req, res, next) => {
@@ -28,6 +30,12 @@ router.put('/:userId',auth, adminOnly, userController.updateUser);
 router.delete('/:userId',auth, adminOnly, userController.deleteUser);
 
 router.get('/rewards', auth, userController.getUserRewards);
+
+// Route: PUT change password
+router.put('/:userId/change-password', auth, userController.changeUserPassword);
+
+// Route: PUT upload avatar
+router.post('/:userId/upload-avatar', auth, upload.single('avatar'), userController.uploadUserAvatar);
 
 
 module.exports = router;

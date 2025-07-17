@@ -20,7 +20,6 @@ const getOperatorsOnly = async (req, res) => {
   }
 };
 
-
 const createUser = async (req, res) => {
   try {
     const { username, email, password, role, status } = req.body;
@@ -124,11 +123,51 @@ const getUserRewards = async (req, res) => {
   }
 };
 
+const uploadUserAvatar = async (req, res) => {
+  const { userId } = req.params;
+  const avatarPath = req.file?.path;
+  if (!avatarPath) {
+    return res.status(400).json({ success: false, message: 'No file uploaded' });
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(userId, { avatar: avatarPath }, { new: true });
+    res.status(200).json({ success: true, data: updatedUser });
+  } catch (err) {
+    console.error('Avatar upload error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+const changeUserPassword = async (req, res) => {
+  const { userId } = req.params;
+  const { oldPassword, newPassword } = req.body;
+
+  try {
+    const user = await User.findById(userId);
+    const match = await bcrypt.compare(oldPassword, user.password);
+    if (!match) {
+      return res.status(400).json({ success: false, message: 'Old password is incorrect' });
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    user.password = hashed;
+    await user.save();
+
+    res.status(200).json({ success: true, message: 'Password updated successfully' });
+  } catch (err) {
+    console.error('Password change error:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
 module.exports = {
   getAllUsers,
   createUser,
   updateUser,
   deleteUser,
   getUserRewards,
-  getOperatorsOnly
+  getOperatorsOnly,
+  uploadUserAvatar,
+  changeUserPassword
 };

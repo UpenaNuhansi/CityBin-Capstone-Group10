@@ -8,20 +8,6 @@ import api from '../../../api/axios';
 import BinMap from '../../../Components/BinManagement/BinMap';
 import { BinContext } from '/src/Components/BinManagement/BinContext.jsx';
 
-
-// const wasteData = [
-//   { month: 'May', value: 210 },
-//   { month: 'Jun', value: 320 },
-//   { month: 'Jul', value: 280 },
-//   { month: 'Aug', value: 480 },
-//   { month: 'Sep', value: 380 },
-//   { month: 'Oct', value: 430 },
-//   { month: 'Nov', value: 350 },
-//   { month: 'Dec', value: 420 },
-// ];
-
-
-
 export default function Dashboard({ activePage, setActivePage, handleNavigation }) {
   const { binData, loading, stats } = useContext(BinContext);
   const [searchText, setSearchText] = useState('');
@@ -36,12 +22,10 @@ export default function Dashboard({ activePage, setActivePage, handleNavigation 
   const [suggestedRoad, setSuggestedRoad] = useState('');
   const [routeToBin, setRouteToBin] = useState(null);
   
-
-
-const [totalBins, setTotalBins] = useState(0);
-const [activeBins, setActiveBins] = useState(0);
-const [fullBins, setFullBins] = useState(0);
-const [maintenanceBins, setMaintenanceBins] = useState(0);
+  const [totalBins, setTotalBins] = useState(0);
+  const [activeBins, setActiveBins] = useState(0);
+  const [fullBins, setFullBins] = useState(0);
+  const [maintenanceBins, setMaintenanceBins] = useState(0);
 
 const fetchDashboardStats = async () => {
     try {
@@ -78,7 +62,6 @@ const fetchDashboardStats = async () => {
       }
     }
   };
-
 
   const markTaskDone = async (notificationId, binId) => {
     if (!binId) {
@@ -168,8 +151,6 @@ const fetchDashboardStats = async () => {
     }
   };
   
-
-
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user') || '{}');
     setUser(storedUser);
@@ -192,7 +173,7 @@ const fetchDashboardStats = async () => {
   );
 
   return (
-    <div className="flex-1 flex flex-col ml-64 min-h-screen bg-gray-50 text-gray-800">
+    <div className="flex-1 flex flex-col mt-20 ml-64 min-h-screen bg-gray-50 text-gray-800">
       <TopBar
         title="Dashboard"
         searchText={searchText}
@@ -200,7 +181,7 @@ const fetchDashboardStats = async () => {
         onProfileClick={() => handleNavigation("/admin/profile")}
       />
 
-      <div className="flex-1 px-6 pt-6 pb-4 bg-white">
+      <div className="flex px-6 pt-6 pb-2 bg-white">
         <h2 className="text-3xl font-semibold text-green-900">Welcome, {user.username || 'Admin'}!</h2>
       </div>
 
@@ -226,35 +207,7 @@ const fetchDashboardStats = async () => {
           <div className="text-lg font-semibold text-orange-800">Maintenance Issues</div>
           <div className="text-3xl font-bold text-orange-700 mt-2">{maintenanceBins}</div>
         </div>
-      </div>
-
-        
-        {/* <div className="grid grid-cols-3 flex gap-6 mt-6">
-          <div
-            className="col-span-2 bg-green-800 rounded-lg p-4 text-white hover:shadow-lg transition-all duration-200 cursor-pointer"
-            onClick={() => handleNavigation('/admin/data-analytics-reports')}
-          >
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={wasteData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-                  <XAxis dataKey="month" stroke="#fff" />
-                  <YAxis stroke="#fff" />
-                  <Tooltip contentStyle={{ backgroundColor: '#333', color: '#fff', border: 'none' }} />
-                  <Line type="monotone" dataKey="value" stroke="#fff" strokeWidth={2} dot={{ fill: '#fff', r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-2">
-              <h3 className="font-bold">Waste Collection Trends</h3>
-              <p className="text-sm text-gray-300">(1131) collected in liters</p>
-              <div className="text-xs text-gray-300 mt-2">
-                <span className="inline-block w-3 h-3 bg-gray-400 rounded-full mr-1"></span>
-                updated 4 min ago
-              </div>
-            </div>
-          </div>
-        </div> */}
+      </div>        
 
         {/* Operator-specific sections */}
         {user.role === 'Operator' && (
