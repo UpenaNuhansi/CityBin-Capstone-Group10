@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+
 const {
   getAllBins,
   createBin,
@@ -12,29 +13,31 @@ const {
   getBinsAssignedToOperator,
   getBinStats
 } = require('../controllers/binController');
+
 const auth = require('../middlewares/auth');
 const adminOnly = require('../middlewares/adminOnly');
 
-// GET /api/bins/stats (accessible to both Admin and Operator)
+
+router.get('/user/:binId', auth, getBinById);  // <--- Added this line
+
+
 router.get('/stats', auth, getBinStats);
-// GET /api/bins/assigned-to-operator (accessible to both Admin and Operator)
 router.get('/assigned-to-operator', auth, getBinsAssignedToOperator);
 
-// Admin-protected routes
+
 router.get('/', auth, adminOnly, getAllBins);
 router.post('/', auth, adminOnly, createBin);
 router.get('/:binId', auth, adminOnly, getBinById);
 router.put('/:binId', auth, adminOnly, updateBin);
 router.delete('/:binId', auth, adminOnly, deleteBin);
-
-// Assign operator to bin for maintenance
 router.post('/:binId/maintenance', auth, adminOnly, assignMaintenance);
 
-// Update bin status (e.g., to OK)
+
+router.post('/update-device', updateBinStatus);
+router.post('/:binId/update', updateBinStatus);
 router.put('/:binId/status', auth, updateBinStatus);
 
-// Operator/user-specific route
-router.get('/user-status', auth, getUserBinStatus);
 
+router.get('/user-status', auth, getUserBinStatus);
 
 module.exports = router;
