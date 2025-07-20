@@ -3,15 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     
-    <!-- 🌿 Custom Leaf Emoji Logo Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    
     <meta http-equiv="Content-Security-Policy" 
-      content="default-src 'self';
-               script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5001;
-               connect-src 'self' http://localhost:5001 ws://localhost:5001;
-               style-src 'self' 'unsafe-inline';
-               img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tile.openstreetmap.de https://api.maptiler.com https://unpkg.com;">
+  content="default-src 'self';
+           script-src 'self' 'unsafe-inline' 'unsafe-eval' http://localhost:5001 http://192.168.8.199:5001;
+           connect-src 'self' http://localhost:5001 http://192.168.8.199:5001 https://router.project-osrm.org ws://localhost:5001 ws://192.168.8.199:5001;
+           style-src 'self' 'unsafe-inline';
+           img-src 'self' data: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tile.openstreetmap.de https://api.maptiler.com https://unpkg.com;">
+
+               
     <title>CityBin</title>
   </head>
   <body>
@@ -19,3 +22,4 @@
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
+
