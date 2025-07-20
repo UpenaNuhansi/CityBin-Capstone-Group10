@@ -32,7 +32,7 @@ HardwareSerial SerialGPS(1);
 String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDFmYzE5YWJlZjc2YWIyMWQ2OTYyZCIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1Mjk4MDkxNiwiZXhwIjoxNzUyOTg4MTE2fQ.EW8txpOv3rfsNaDodtuRve6HWnRmndesVb3x7Rwlo-U";
 
 //  Bin ID 
-String binId = "bin001";
+String binId = "CB1121";
 
 void setup() {
   Serial.begin(115200);
