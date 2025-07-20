@@ -1,0 +1,137 @@
+#include <WiFi.h>
+#include <HTTPClient.h>
+#include <HX711.h>
+#include <TinyGPSPlus.h>
+#include <HardwareSerial.h>
+
+// WiFi credentials
+const char* ssid = "Dialog 4G 192";
+const char* password = "3Ba5EF0D";
+
+// Backend endpoint
+const char* serverUrl = "http://192.168.8.199:5001/api/bins";
+
+// Ultrasonic Sensor Pins
+const int trigPin = 10;
+const int echoPin = 18;
+
+// Distance Calibration (in cm)
+const int emptyDistance = 20;
+const int fullDistance = 5;
+
+// Weight Sensor 
+HX711 scale;
+const int DOUT = 19;
+const int CLK = 2;
+
+// GPS Setup
+TinyGPSPlus gps;
+HardwareSerial SerialGPS(1); 
+
+// Auth Token
+String token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDFmYzE5YWJlZjc2YWIyMWQ2OTYyZCIsInJvbGUiOiJBZG1pbiIsImlhdCI6MTc1Mjk4MDkxNiwiZXhwIjoxNzUyOTg4MTE2fQ.EW8txpOv3rfsNaDodtuRve6HWnRmndesVb3x7Rwlo-U";
+
+//  Bin ID 
+String binId = "bin001";
+
+void setup() {
+  Serial.begin(115200);
+  SerialGPS.begin(9600, SERIAL_8N1, 4, 5);  // RX, TX
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  scale.begin(DOUT, CLK);
+  scale.set_scale();  
+  scale.tare();
+
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\nConnected to WiFi!");
+}
+
+void loop() {
+  // 1. Measure Fill Level
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  long duration = pulseIn(echoPin, HIGH);
+  int distance = duration * 0.034 / 2;
+
+  int fillLevel = map(distance, emptyDistance, fullDistance, 0, 100);
+  fillLevel = constrain(fillLevel, 0, 100);
+
+  // 2. Measure Weight
+  float weight = scale.get_units(5);
+  weight = max(weight, 0.0f);  // Avoid negative weight
+
+  // 3. GPS Location
+  while (SerialGPS.available() > 0) {
+    gps.encode(SerialGPS.read());
+  }
+
+  if (gps.location.isValid()) {
+    float lat = gps.location.lat();
+    float lng = gps.location.lng();
+
+    Serial.print("Location: ");
+    Serial.print(lat, 6);
+    Serial.print(", ");
+    Serial.println(lng, 6);
+
+    Serial.print("Distance: ");
+    Serial.print(distance);
+    Serial.print(" cm | Fill Level: ");
+    Serial.print(fillLevel);
+    Serial.println("%");
+
+    Serial.print("Weight: ");
+    Serial.print(weight, 2);
+    Serial.println(" kg");
+
+    // Send Data
+    sendToBackend(binId, fillLevel, weight, lat, lng);
+  } else {
+    Serial.println("GPS location not available. Skipping send.");
+  }
+
+  delay(5000);  
+}
+
+void sendToBackend(String binId, int fill, float weight, float lat, float lng) {
+  if (WiFi.status() == WL_CONNECTED) {
+    HTTPClient http;
+    http.begin(String(serverUrl) + "/" + binId);  
+    http.addHeader("Content-Type", "application/json");
+    http.addHeader("Authorization", "Bearer " + token);
+
+    String payload = "{\"binId\":\"" + binId +
+                     "\",\"location\":\"University Hostel Block A\"" +
+                     ",\"wasteLevel\":" + String(fill) +
+                     ",\"maintenance\":\"OK\"" +
+                     ",\"coordinates\":{\"lat\":" + String(lat, 6) +
+                     ",\"lng\":" + String(lng, 6) + "}" +
+                     ",\"deviceStatus\":\"online\"}";
+
+    Serial.println("Sending payload:");
+    Serial.println(payload);
+
+    int httpResponseCode = http.PUT(payload);
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+
+    String response = http.getString();
+    Serial.println("Server response:");
+    Serial.println(response);
+
+    http.end();
+  } else {
+    Serial.println("WiFi not connected.");
+  }
+}
