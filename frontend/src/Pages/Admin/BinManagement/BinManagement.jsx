@@ -223,7 +223,15 @@ await fetchBins();
   );
 
 
- console.log('Filtered bins for BinMap:', filteredBins); // Debug log
+  useEffect(() => {
+    fetchBins(); // Load initially
+  
+    const interval = setInterval(() => {
+      fetchBins(); // Refresh every 5 seconds
+    }, 5000);
+  
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, []);
 
  return (
     <div className="flex h-screen bg-white">

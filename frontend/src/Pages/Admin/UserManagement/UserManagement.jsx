@@ -153,8 +153,7 @@ export default function UserManagement({ handleNavigation }) {
                     <td className="py-3 px-4 border-t">{user.uniqueId}</td>
                     <td className="py-3 px-4 border-t">{user.username}</td>
                     <td className="py-3 px-4 border-t">{user.email}</td>
-                    <td className="py-3 px-4 border-t">{user.role}</td>
-                    <td className="py-3 px-4 border-t">{user.status}</td>
+                    <td className="py-3 px-4 border-t">{user.role}</td>                  
                     <td className="py-3 px-4 border-t">
                       <span
                         className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
