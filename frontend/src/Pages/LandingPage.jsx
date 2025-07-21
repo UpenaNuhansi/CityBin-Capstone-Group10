@@ -105,12 +105,12 @@ export default function LandingPage() {
             >
               Login
             </button>
-            <button 
+            {/*<button 
               className="w-[300px] py-4 bg-white text-green-500 rounded-[5px] shadow-md text-xl font-medium hover:bg-green-50 transition" 
               onClick={() => navigate('/demo')}
             >
               See the Demo
-            </button>
+            </button>*/}
           </div>
         </div>
       </div>
