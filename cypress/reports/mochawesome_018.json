@@ -1,0 +1,143 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 3,
+    "passes": 3,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-10-31T19:37:38.116Z",
+    "end": "2025-10-31T19:37:46.670Z",
+    "duration": 8554,
+    "testsRegistered": 3,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "7d26f5ad-887a-4106-85b7-aa903e7c5462",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\login.cy.js",
+      "file": "cypress\\e2e\\frontend\\login.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "a208c97d-7f85-469b-8e77-9162858329f7",
+          "title": "CityBin - Login Functionality",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should load login page successfully",
+              "fullTitle": "CityBin - Login Functionality should load login page successfully",
+              "timedOut": null,
+              "duration": 2235,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Sign In', {\n  timeout: 10000\n}).should('be.visible');",
+              "err": {},
+              "uuid": "fe2e90e1-5294-409d-804b-9998d949c96f",
+              "parentUUID": "a208c97d-7f85-469b-8e77-9162858329f7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should not login with wrong credentials",
+              "fullTitle": "CityBin - Login Functionality should not login with wrong credentials",
+              "timedOut": null,
+              "duration": 2444,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[placeholder=\"Email\"]').type('wrong@user.com');\ncy.get('input[placeholder=\"Password\"]').type('wrongpass');\ncy.contains('button', 'Sign In').click();\ncy.contains('Network error. Please try again.').should('exist');",
+              "err": {},
+              "uuid": "e69c8dc3-0120-45e5-8145-975ed09e62ee",
+              "parentUUID": "a208c97d-7f85-469b-8e77-9162858329f7",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should login successfully and redirect to dashboard",
+              "fullTitle": "CityBin - Login Functionality should login successfully and redirect to dashboard",
+              "timedOut": null,
+              "duration": 3519,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[placeholder=\"Email\"]').type('admin@citybin.com');\ncy.get('input[placeholder=\"Password\"]').type('Admin1234');\ncy.contains('button', 'Sign In').click();\ncy.url({\n  timeout: 15000\n}).should('include', '/admin/dashboard');",
+              "err": {},
+              "uuid": "be1eabbb-7273-4fff-acaa-c7ba55a2830e",
+              "parentUUID": "a208c97d-7f85-469b-8e77-9162858329f7",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "fe2e90e1-5294-409d-804b-9998d949c96f",
+            "e69c8dc3-0120-45e5-8145-975ed09e62ee",
+            "be1eabbb-7273-4fff-acaa-c7ba55a2830e"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 8198,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

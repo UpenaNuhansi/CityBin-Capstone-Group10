@@ -1,0 +1,155 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 3,
+    "passes": 0,
+    "pending": 0,
+    "failures": 3,
+    "start": "2025-10-28T12:27:31.442Z",
+    "end": "2025-10-28T12:28:15.042Z",
+    "duration": 43600,
+    "testsRegistered": 3,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "5dcb7009-a2c7-46e6-8fc9-610216ba5b4d",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\bins.cy.js",
+      "file": "cypress\\e2e\\frontend\\bins.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "89296fa4-a3e3-4f6b-997e-61ed40979361",
+          "title": "CityBin - Bin Management",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should load bins table",
+              "fullTitle": "CityBin - Bin Management should load bins table",
+              "timedOut": null,
+              "duration": 16640,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('table').should('exist');",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `table`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `table`, but never found it.\n    at Context.eval (webpack://citybin-repo/./cypress/e2e/frontend/bins.cy.js:8:20)",
+                "diff": null
+              },
+              "uuid": "d3af21e4-e3e4-4ff1-bb3b-22b834d6af55",
+              "parentUUID": "89296fa4-a3e3-4f6b-997e-61ed40979361",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should add a new bin",
+              "fullTitle": "CityBin - Bin Management should add a new bin",
+              "timedOut": null,
+              "duration": 9771,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Add Bin').click();\ncy.get('input[placeholder=\"Location\"]').type('Main Street');\ncy.get('input[placeholder=\"Waste Level\"]').type('50');\ncy.contains('button', 'Save').click();\ncy.contains('Bin added successfully').should('exist');",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Add Bin' but never did.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected to find content: 'Add Bin' but never did.\n    at Context.eval (webpack://citybin-repo/./cypress/e2e/frontend/bins.cy.js:12:7)",
+                "diff": null
+              },
+              "uuid": "2c05b476-1cb6-485c-a06f-dd2edfe4a4c0",
+              "parentUUID": "89296fa4-a3e3-4f6b-997e-61ed40979361",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should delete a bin",
+              "fullTitle": "CityBin - Bin Management should delete a bin",
+              "timedOut": null,
+              "duration": 16907,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('table tr').first().find('button:contains(\"Delete\")').click();\ncy.contains('Bin deleted successfully').should('exist');",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `table tr`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `table tr`, but never found it.\n    at Context.eval (webpack://citybin-repo/./cypress/e2e/frontend/bins.cy.js:20:7)",
+                "diff": null
+              },
+              "uuid": "9378c573-c6b8-4305-ae97-32ba3176dce9",
+              "parentUUID": "89296fa4-a3e3-4f6b-997e-61ed40979361",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "d3af21e4-e3e4-4ff1-bb3b-22b834d6af55",
+            "2c05b476-1cb6-485c-a06f-dd2edfe4a4c0",
+            "9378c573-c6b8-4305-ae97-32ba3176dce9"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 43318,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

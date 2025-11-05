@@ -1,0 +1,225 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 1,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-11-05T19:16:02.616Z",
+    "end": "2025-11-05T19:16:13.759Z",
+    "duration": 11143,
+    "testsRegistered": 7,
+    "passPercent": 14.285714285714285,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 5,
+    "hasSkipped": true
+  },
+  "results": [
+    {
+      "uuid": "6d132c1c-deb6-4bce-ad9a-75896dd08457",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\dashboard.cy.js",
+      "file": "cypress\\e2e\\frontend\\dashboard.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+          "title": "CityBin - Admin Dashboard",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display key dashboard elements",
+              "fullTitle": "CityBin - Admin Dashboard should display key dashboard elements",
+              "timedOut": null,
+              "duration": 5677,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Dashboard').should('be.visible');\ncy.contains('Total Bins').should('be.visible');\ncy.contains('Active Bins').should('be.visible');\ncy.contains('Full Bins').should('be.visible');\ncy.contains('Maintenance Issues').should('be.visible');\ncy.contains('Common Announcements').should('be.visible');\n//cy.get('[data-testid=\"chart\"]').should('exist');",
+              "err": {},
+              "uuid": "1214d227-8365-47f6-bad8-258b5e9b5b84",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to user management",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to user management",
+              "timedOut": null,
+              "duration": 5148,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('User Management').click();\ncy.url().should('include', '/admin/user-management');",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `input[placeholder=\"Email\"]`, but never found it.\n\nBecause this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `CityBin - Admin Dashboard`",
+                "estack": "AssertionError: Timed out retrying after 4000ms: Expected to find element: `input[placeholder=\"Email\"]`, but never found it.\n\nBecause this error occurred during a `before each` hook we are skipping the remaining tests in the current suite: `CityBin - Admin Dashboard`\n    at Context.eval (webpack://citybin-repo/./cypress/e2e/frontend/dashboard.cy.js:8:7)",
+                "diff": null
+              },
+              "uuid": "861549a5-8c17-4a1d-9212-f723c6ceaf61",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should navigate to bins management",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to bins management",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Bin Management').click();\ncy.url().should('include', '/admin/bin-management');",
+              "err": {},
+              "uuid": "963a9634-ebe5-4b0f-9cd4-854285873758",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "should navigate to bins management",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to bins management",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Data Analytics & Reports').click();\ncy.url().should('include', '/admin/data-analytics-reports');",
+              "err": {},
+              "uuid": "b67c510f-aa29-4f40-8a05-fa2dbc42c40e",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "should navigate to alerts & notifications",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to alerts & notifications",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Alerts & Notifications').click();\ncy.url().should('include', '/admin/alerts-notifications');",
+              "err": {},
+              "uuid": "04cfbf2b-7937-4af6-ad09-ee95acebc0f4",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "should navigate to system settings",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to system settings",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('System Settings').click();\ncy.url().should('include', '/admin/system-settings');",
+              "err": {},
+              "uuid": "3fc8bf6b-5ad8-492f-a770-157609f89261",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": true
+            },
+            {
+              "title": "should navigate to admin profile",
+              "fullTitle": "CityBin - Admin Dashboard should navigate to admin profile",
+              "timedOut": null,
+              "duration": 0,
+              "state": "skipped",
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Profile').click();\ncy.url().should('include', '/admin/profile');",
+              "err": {},
+              "uuid": "64432e53-4a1f-4e65-af5e-7d3982132568",
+              "parentUUID": "8a575232-d7cf-43a7-aa4b-cd633a30f921",
+              "isHook": false,
+              "skipped": true
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "1214d227-8365-47f6-bad8-258b5e9b5b84"
+          ],
+          "failures": [
+            "861549a5-8c17-4a1d-9212-f723c6ceaf61"
+          ],
+          "pending": [],
+          "skipped": [
+            "963a9634-ebe5-4b0f-9cd4-854285873758",
+            "b67c510f-aa29-4f40-8a05-fa2dbc42c40e",
+            "04cfbf2b-7937-4af6-ad09-ee95acebc0f4",
+            "3fc8bf6b-5ad8-492f-a770-157609f89261",
+            "64432e53-4a1f-4e65-af5e-7d3982132568"
+          ],
+          "duration": 10825,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

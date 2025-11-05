@@ -1,0 +1,105 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-11-05T19:16:39.625Z",
+    "end": "2025-11-05T19:16:50.244Z",
+    "duration": 10619,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "7c645699-6bb4-440e-bdfe-a512d54c1634",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\profile.cy.js",
+      "file": "cypress\\e2e\\frontend\\profile.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "85334e61-1a41-4e06-a04f-ce4f60897e62",
+          "title": "CityBin - User Profile",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should display user info",
+              "fullTitle": "CityBin - User Profile should display user info",
+              "timedOut": null,
+              "duration": 10434,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Profile').should('be.visible');\n// the Email is rendered as static text (<p>), not an input — verify it here\ncy.contains('p', 'Email').next('p').should('contain.text', 'admin@citybin.com');\ncy.contains('p', 'Username').next('p').should('contain.text', 'Admin');\ncy.contains('p', 'Role').next('p').should('contain.text', 'admin');",
+              "err": {},
+              "uuid": "8de11a65-52cb-4da5-9015-d717f7645ab5",
+              "parentUUID": "85334e61-1a41-4e06-a04f-ce4f60897e62",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "8de11a65-52cb-4da5-9015-d717f7645ab5"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 10434,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}
