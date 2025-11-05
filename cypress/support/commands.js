@@ -23,3 +23,19 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+
+Cypress.Commands.add('loginAsAdmin', () => {
+  window.localStorage.setItem('token', '<your-admin-jwt>');
+  window.localStorage.setItem('user', JSON.stringify({
+    email: 'admin@citybin.com',
+    role: 'Admin'
+  }));
+});
+
+Cypress.Commands.add('loginAsUser', () => {
+  window.localStorage.setItem('token', '<your-user-jwt>');
+  window.localStorage.setItem('user', JSON.stringify({
+    email: 'user@citybin.com',
+    role: 'User'
+  }));
+});

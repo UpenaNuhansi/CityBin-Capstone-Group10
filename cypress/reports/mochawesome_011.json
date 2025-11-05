@@ -1,0 +1,109 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 0,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-10-28T12:29:04.806Z",
+    "end": "2025-10-28T12:29:13.494Z",
+    "duration": 8688,
+    "testsRegistered": 1,
+    "passPercent": 0,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "52c17194-4135-417a-9d20-6242580f82bb",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\logout.cy.js",
+      "file": "cypress\\e2e\\frontend\\logout.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "1dfb0f9e-6728-4c12-9267-bd34e51ffbcb",
+          "title": "CityBin - Logout Functionality",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should logout and redirect to login",
+              "fullTitle": "CityBin - Logout Functionality should logout and redirect to login",
+              "timedOut": null,
+              "duration": 8597,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.contains('Logout').click();\ncy.url({\n  timeout: 10000\n}).should('include', '/login');\ncy.contains('Sign In').should('be.visible');",
+              "err": {
+                "message": "CypressError: Timed out retrying after 4050ms: `cy.click()` failed because the page updated while this command was executing. Cypress tried to locate elements based on this query:\n\n> cy.contains(Logout)\n\nWe initially found matching element(s), but while waiting for them to become actionable, they disappeared from the page. Common situations why this happens:\n  - Your JS framework re-rendered asynchronously\n  - Your app code reacted to an event firing and removed the element\n\nYou can typically solve this by breaking up a chain. For example, rewrite:\n\n> `cy.get('button').click().click()`\n\nto\n\n> `cy.get('button').as('btn').click()`\n> `cy.get('@btn').click()`\n\nhttps://on.cypress.io/element-has-detached-from-dom",
+                "estack": "CypressError: Timed out retrying after 4050ms: `cy.click()` failed because the page updated while this command was executing. Cypress tried to locate elements based on this query:\n\n> cy.contains(Logout)\n\nWe initially found matching element(s), but while waiting for them to become actionable, they disappeared from the page. Common situations why this happens:\n  - Your JS framework re-rendered asynchronously\n  - Your app code reacted to an event firing and removed the element\n\nYou can typically solve this by breaking up a chain. For example, rewrite:\n\n> `cy.get('button').click().click()`\n\nto\n\n> `cy.get('button').as('btn').click()`\n> `cy.get('@btn').click()`\n\nhttps://on.cypress.io/element-has-detached-from-dom\n    at retryActionability (http://localhost:5173/__cypress/runner/cypress_runner.js:115037:74)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (http://localhost:5173/__cypress/runner/cypress_runner.js:4285:29)\n    at whenStable (http://localhost:5173/__cypress/runner/cypress_runner.js:151252:68)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:151193:14)\n    at tryCatcher (http://localhost:5173/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise._settlePromiseFromHandler (http://localhost:5173/__cypress/runner/cypress_runner.js:1489:31)\n    at Promise._settlePromise (http://localhost:5173/__cypress/runner/cypress_runner.js:1546:18)\n    at Promise._settlePromise0 (http://localhost:5173/__cypress/runner/cypress_runner.js:1591:10)\n    at Promise._settlePromises (http://localhost:5173/__cypress/runner/cypress_runner.js:1671:18)\n    at Promise._fulfill (http://localhost:5173/__cypress/runner/cypress_runner.js:1615:18)\n    at <unknown> (http://localhost:5173/__cypress/runner/cypress_runner.js:5420:46)\nFrom Your Spec Code:\n    at Object.proxyGetter [as get] (http://localhost:5173/__cypress/runner/cypress_runner.js:80711:22)\n    at exists (http://localhost:5173/__cypress/runner/cypress_runner.js:150440:26)\n    at elExists (http://localhost:5173/__cypress/runner/cypress_runner.js:150455:10)\n    at ensureExistence (http://localhost:5173/__cypress/runner/cypress_runner.js:150636:22)\n    at onFailFn (http://localhost:5173/__cypress/runner/cypress_runner.js:150665:53)",
+                "diff": null
+              },
+              "uuid": "4e5a234b-ffdc-4d27-aa06-397507e9976a",
+              "parentUUID": "1dfb0f9e-6728-4c12-9267-bd34e51ffbcb",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [],
+          "failures": [
+            "4e5a234b-ffdc-4d27-aa06-397507e9976a"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 8597,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

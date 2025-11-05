@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-10-28T12:08:09.595Z",
+    "end": "2025-10-28T12:08:10.868Z",
+    "duration": 1273,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "79c43227-c0b3-404d-a74f-746d08344502",
+      "title": "",
+      "fullFile": "cypress\\e2e\\backend\\bins.cy.js",
+      "file": "cypress\\e2e\\backend\\bins.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "74d3757f-96a2-4639-b3f5-b28fb0e38412",
+          "title": "CityBin Bin API Tests",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should create a new bin",
+              "fullTitle": "CityBin Bin API Tests should create a new bin",
+              "timedOut": null,
+              "duration": 864,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.request({\n  method: 'POST',\n  url: `${apiUrl}/bins`,\n  headers: {\n    Authorization: `Bearer ${token}`\n  },\n  body: {\n    binId: `BIN-${Date.now()}`,\n    location: 'Test Location',\n    wasteLevel: 40,\n    coordinates: {\n      lat: 6.9,\n      lng: 79.8\n    },\n    deviceStatus: 'online'\n  }\n}).then(res => {\n  expect(res.status).to.eq(201);\n  expect(res.body.status).to.eq('success');\n});",
+              "err": {},
+              "uuid": "4d9b4414-9208-4ec3-99e7-11c721b86cfb",
+              "parentUUID": "74d3757f-96a2-4639-b3f5-b28fb0e38412",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should fetch all bins",
+              "fullTitle": "CityBin Bin API Tests should fetch all bins",
+              "timedOut": null,
+              "duration": 285,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.request({\n  method: 'GET',\n  url: `${apiUrl}/bins`,\n  headers: {\n    Authorization: `Bearer ${token}`\n  }\n}).then(res => {\n  expect(res.status).to.eq(200);\n  expect(res.body.status).to.eq('success');\n});",
+              "err": {},
+              "uuid": "74f7df43-49d0-4300-8eff-e8ced1d5245a",
+              "parentUUID": "74d3757f-96a2-4639-b3f5-b28fb0e38412",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "4d9b4414-9208-4ec3-99e7-11c721b86cfb",
+            "74f7df43-49d0-4300-8eff-e8ced1d5245a"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 1149,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}

@@ -1,0 +1,129 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 1,
+    "pending": 0,
+    "failures": 1,
+    "start": "2025-10-28T10:55:03.365Z",
+    "end": "2025-10-28T10:55:22.123Z",
+    "duration": 18758,
+    "testsRegistered": 2,
+    "passPercent": 50,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "7c56a175-6e57-46a2-ba07-7135daa7eb73",
+      "title": "",
+      "fullFile": "cypress\\e2e\\frontend\\login.cy.js",
+      "file": "cypress\\e2e\\frontend\\login.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "cf83eac6-6d0b-42b7-8d4f-1a5c02c04501",
+          "title": "CityBin Frontend Login Page",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should load login page",
+              "fullTitle": "CityBin Frontend Login Page should load login page",
+              "timedOut": null,
+              "duration": 8248,
+              "state": "passed",
+              "speed": "medium",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.visit('/login');\ncy.contains('Sign In').should('be.visible');",
+              "err": {},
+              "uuid": "a49089b7-43f5-46fa-9774-cd79f04dc4d7",
+              "parentUUID": "cf83eac6-6d0b-42b7-8d4f-1a5c02c04501",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "should login with valid credentials",
+              "fullTitle": "CityBin Frontend Login Page should login with valid credentials",
+              "timedOut": null,
+              "duration": 10331,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.get('input[placeholder=\"Email\"]', {\n  timeout: 10000\n}).should('exist').type('admin@citybin.com');\ncy.get('input[placeholder=\"Password\"]', {\n  timeout: 10000\n}).should('exist').type('Admin1234');\ncy.contains('button', /sign in/i).should('exist').click();\ncy.url({\n  timeout: 15000\n}).should('include', '/admin/dashboard');",
+              "err": {
+                "message": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `input[placeholder=\"Email\"]`, but never found it.",
+                "estack": "AssertionError: Timed out retrying after 10000ms: Expected to find element: `input[placeholder=\"Email\"]`, but never found it.\n    at Context.eval (webpack://citybin-repo/./cypress/e2e/frontend/login.cy.js:8:61)",
+                "diff": null
+              },
+              "uuid": "9d00ec95-4fb8-4de5-968b-bee57e15877f",
+              "parentUUID": "cf83eac6-6d0b-42b7-8d4f-1a5c02c04501",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "a49089b7-43f5-46fa-9774-cd79f04dc4d7"
+          ],
+          "failures": [
+            "9d00ec95-4fb8-4de5-968b-bee57e15877f"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 18579,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": true,
+        "json": true
+      },
+      "version": "6.3.0"
+    }
+  }
+}
